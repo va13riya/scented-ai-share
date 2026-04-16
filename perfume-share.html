@@ -1,0 +1,1629 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+
+  <!-- ═══════════════════════════════════════════════════════════════
+       DYNAMIC META — update per-perfume before serving
+  ═══════════════════════════════════════════════════════════════ -->
+  <title data-dynamic="page-title">Blanche Bête · Scented</title>
+  <meta name="description"     data-dynamic="og-desc"
+        content="Discover Blanche Bête by Les Liquides Imaginaires on Scented.ai">
+  <meta property="og:title"    data-dynamic="og-title"
+        content="Blanche Bête by Les Liquides Imaginaires">
+  <meta property="og:description" data-dynamic="og-desc-2"
+        content="Discover this fragrance on Scented">
+  <meta property="og:image"    data-dynamic="og-image"   content="PERFUME_OG_IMAGE_URL">
+  <meta property="og:type"     content="website">
+  <meta name="theme-color"     content="#f9fafb">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Krona+One&family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+
+  <style>
+    /* ───────────────────────────────────────────────────────────────
+       DESIGN TOKENS (from Figma "Shared perfume page" 980:1532)
+    ─────────────────────────────────────────────────────────────── */
+    :root {
+      /* surfaces */
+      --bg:          #f9fafb;
+      --card:        #ffffff;
+
+      /* text */
+      --t-dark:      #393840;   /* secondary dark */
+      --t-black:     #1f1f1f;   /* secondary black */
+      --t-gray:      #a0a3bd;   /* secondary gray */
+      --t-mid:       #888888;   /* mid-gray */
+      --t-disc:      #ff6161;   /* discontinued / error */
+
+      /* primary teal */
+      --primary:     #68D1C5;
+      --primary-lt:  #b4dede;   /* track / muted teal */
+      --primary-100: #e2f4f4;   /* check icon bg */
+      --primary-700: #569ea1;   /* feature text */
+
+      /* extra */
+      --extra-bg:    #eff0f6;   /* tile / badge bg */
+
+      /* gradient (header btn, fixed bar btn) */
+      --grad: linear-gradient(27deg, #4395C7 31.7%, #89E8C9 104.9%);
+
+      /* shadows & borders */
+      --border:       rgba(0,0,0,0.07);
+      --shadow-card:  0 1px 2px rgba(0,0,0,.06), 0 1px 3px rgba(0,0,0,.1);
+      --shadow-block: 0 2px 4px rgba(0,0,0,.1),  0 0   4px rgba(0,0,0,.07);
+      --shadow-pill:  0 2px 12px rgba(0,0,0,.09);
+      --shadow-bar:   0 -6px 28px rgba(0,0,0,.09);
+      --shadow-icon:  0 3px 14px rgba(0,0,0,.1);
+
+      /* radii */
+      --r-card: 16px;
+      --r-cta:  20px;
+      --r-pill: 100px;
+      --r-tile: 10px;
+
+      /* layout */
+      --bar-h: 76px;
+      --px:    10px;   /* horizontal page padding */
+      --gap:   10px;   /* gap between cards */
+    }
+
+    /* ───────────────────────────────────────────────────────────────
+       BASE RESET
+    ─────────────────────────────────────────────────────────────── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Poppins', system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--t-dark);
+      min-height: 100vh;
+      /* space for fixed bar on mobile */
+      padding-bottom: calc(var(--bar-h) + env(safe-area-inset-bottom, 0px));
+      -webkit-font-smoothing: antialiased;
+      overflow-x: hidden;
+      position: relative;
+    }
+
+    img    { display: block; max-width: 100%; }
+    a      { color: inherit; text-decoration: none; }
+    button { font-family: inherit; cursor: pointer; border: none; background: none; }
+    ul     { list-style: none; }
+
+    /* ───────────────────────────────────────────────────────────────
+       DECORATIVE BLUE BUBBLES (background layer)
+    ─────────────────────────────────────────────────────────────── */
+    .bubbles-bg {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 0;
+      overflow: hidden;
+    }
+    .bubble {
+      position: absolute;
+      width: 183%;           /* oversized to match Figma bleed */
+    }
+    .bubble--tl {
+      left:  -35%;
+      top:   2%;
+      opacity: .9;
+    }
+    .bubble--br {
+      right: -35%;
+      bottom: 2%;
+      transform: scaleX(-1); /* mirror horizontally */
+      opacity: .9;
+    }
+
+    /* ───────────────────────────────────────────────────────────────
+       HEADER  (993:8628)
+       sticky, #f7fafb, 52px, gradient CTA pill
+    ─────────────────────────────────────────────────────────────── */
+    .site-header {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 16px;
+      height: 52px;
+      background: #f7fafb;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .header-logo {
+      height: 32px;
+      width: auto;
+      display: block;
+    }
+
+    .header-logo-fallback {
+      font-family: 'Inter', sans-serif;
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--t-dark);
+      letter-spacing: -.3px;
+    }
+
+    .header-btn {
+      display: inline-flex;
+      align-items: center;
+      background: var(--grad);
+      color: #fff;
+      font-family: 'Inter', sans-serif;
+      font-size: 13px;
+      font-weight: 600;
+      padding: 8px 16px;
+      border-radius: var(--r-pill);
+      white-space: nowrap;
+      transition: opacity .15s;
+      flex-shrink: 0;
+    }
+    .header-btn:active { opacity: .82; }
+
+    /* ───────────────────────────────────────────────────────────────
+       HERO  (980:1645)
+       bottle image + blurred reflection + page dots
+    ─────────────────────────────────────────────────────────────── */
+    .hero {
+      position: relative;
+      z-index: 1;
+      padding-bottom: 0;
+    }
+
+    /* overflow:hidden clips the blurred reflection to a thin peek */
+    .hero-scroll-clip {
+      overflow: hidden;
+      padding: 8px 0 0;
+    }
+
+    /* flex row: main bottle + reflection side-by-side */
+    .hero-slide-track {
+      display: flex;
+      gap: 13px;
+      padding: 0 26px;
+      /* total natural width = 26+320+13+320+26 = 705px → clips at viewport */
+    }
+
+    .bottle-frame {
+      flex-shrink: 0;
+      width: 320px;
+      height: 337.92px;
+      border-radius: 20px;
+      overflow: hidden;
+      /* Figma: the bottle image sits on the page bg (no extra shadow needed) */
+    }
+
+    /* The main bottle image */
+    .bottle-img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center;
+    }
+
+    /* Blurred mirrored reflection — the "next slide" peek */
+    .bottle-frame--reflect {
+      transform: scaleY(-1);
+      filter: blur(4px);
+      opacity: 0.8;
+    }
+
+    /* Desktop-only hero info column (hidden on mobile/tablet) */
+    .hero-desktop-meta { display: none; }
+
+    /* Page indicator dots */
+    .page-dots {
+      display: flex;
+      justify-content: center;
+      gap: 3px;
+      margin-top: 12px;
+      padding-bottom: 8px;
+    }
+    .dot {
+      width: 9px;
+      height: 9px;
+      border-radius: 27px;
+    }
+    .dot--active {
+      background: #a0a3bd;
+    }
+    .dot--empty {
+      border: 1px solid #a0a3bd;
+      background: transparent;
+    }
+
+    /* ───────────────────────────────────────────────────────────────
+       PAGE WRAPPER  — flex column of cards
+    ─────────────────────────────────────────────────────────────── */
+    .page {
+      position: relative;
+      z-index: 1;
+      padding: var(--gap) var(--px) var(--gap);
+      display: flex;
+      flex-direction: column;
+      gap: var(--gap);
+    }
+
+    /* ───────────────────────────────────────────────────────────────
+       CARD BASE
+    ─────────────────────────────────────────────────────────────── */
+    .card {
+      background: var(--card);
+      border-radius: var(--r-card);
+      box-shadow: var(--shadow-card);
+      padding: 16px;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .card-title {
+      font-family: 'Krona One', sans-serif;
+      font-size: 14px;
+      font-weight: 400;
+      color: var(--t-dark);
+      line-height: 1.4;
+      text-transform: lowercase;
+    }
+
+    /* ───────────────────────────────────────────────────────────────
+       IDENTITY CARD  (980:1653)
+    ─────────────────────────────────────────────────────────────── */
+
+    /* Row 1: house · dot · perfumer */
+    .identity-top {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 12px;
+      flex-wrap: wrap;
+    }
+    .house-name {
+      font-family: 'Poppins', sans-serif;
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--primary);
+      white-space: nowrap;
+      line-height: 20px;
+    }
+    .dot-sep {
+      width: 4px;
+      height: 4px;
+      border-radius: 50%;
+      background: var(--t-dark);
+      flex-shrink: 0;
+    }
+    .perfumer-row {
+      font-family: 'Poppins', sans-serif;
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--t-dark);
+      line-height: 20px;
+      white-space: nowrap;
+    }
+    .perfumer-name { color: var(--primary); }
+
+    /* Row 2: big perfume title */
+    .perfume-title {
+      font-family: 'Poppins', sans-serif;
+      font-size: 32px;
+      font-weight: 600;
+      color: var(--t-dark);
+      line-height: 1;
+      margin-bottom: 8px;
+    }
+
+    /* Row 3: metadata strip EDP | UNISEX | 2021 | DISC */
+    .meta-strip {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-family: 'Poppins', sans-serif;
+      font-size: 12px;
+      font-weight: 500;
+      text-transform: uppercase;
+      color: var(--t-dark);
+      line-height: 20px;
+      margin-bottom: 16px;
+    }
+    .meta-sep    { color: var(--t-dark); }
+    .meta-disc   { color: var(--t-disc); }
+
+    /* Row 4: rating tiles */
+    .rating-tiles {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 16px;
+    }
+    .tile {
+      flex: 1;
+      min-width: 0;
+      background: var(--extra-bg);
+      border-radius: var(--r-tile);
+      padding: 10px 8px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+    }
+    .tile-score-row {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+    .tile-icon {
+      width: 16px;
+      height: 16px;
+      flex-shrink: 0;
+      display: block;
+    }
+    .tile-num {
+      font-family: 'Krona One', sans-serif;
+      font-size: 16px;
+      color: var(--t-black);
+      line-height: 1.4;
+    }
+    .tile-denom {
+      font-family: 'Krona One', sans-serif;
+      font-size: 12px;
+      color: var(--t-gray);
+      line-height: 1.4;
+      text-transform: lowercase;
+    }
+    .tile-label {
+      font-family: 'Poppins', sans-serif;
+      font-size: 12px;
+      font-weight: 400;
+      color: var(--t-black);
+    }
+
+    /* Row 5: description + Read more */
+    .desc-wrap {
+      font-family: 'Poppins', sans-serif;
+      font-size: 14px;
+      line-height: 1.4;
+      color: var(--t-dark);
+    }
+    .description {
+      display: -webkit-box;
+      -webkit-box-orient: vertical;
+      -webkit-line-clamp: 2;
+      overflow: hidden;
+    }
+    .description.is-expanded {
+      display: block;
+      -webkit-line-clamp: unset;
+      overflow: visible;
+    }
+    .read-more-btn {
+      font-family: 'Poppins', sans-serif;
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--primary);
+      padding: 0;
+      background: none;
+      border: none;
+      cursor: pointer;
+      display: inline;
+    }
+
+    /* ───────────────────────────────────────────────────────────────
+       SCENT PROFILE CARD  (980:1720)
+    ─────────────────────────────────────────────────────────────── */
+    .scent-card > .card-title { margin-bottom: 16px; }
+
+    .scent-sliders {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin-bottom: 16px;
+    }
+
+    .scent-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .scent-row--locked {
+      filter: blur(3px);
+      pointer-events: none;
+      user-select: none;
+    }
+
+    .scent-label {
+      font-family: 'Poppins', sans-serif;
+      font-size: 12px;
+      font-weight: 400;
+      color: var(--t-black);
+      width: 65px;
+      flex-shrink: 0;
+      line-height: normal;
+    }
+    .scent-label--l { text-align: right; }
+    .scent-label--r { text-align: left;  }
+
+    .scent-track {
+      flex: 1;
+      height: 2px;
+      background: var(--primary-lt);
+      border-radius: 1px;
+      position: relative;
+    }
+    .scent-dot {
+      position: absolute;
+      top: 50%;
+      width:  10px;
+      height: 10px;
+      border-radius: 30px;
+      background: var(--primary);
+      border: 2px solid white;
+      transform: translate(-50%, -50%);
+    }
+
+    /* lock pill */
+    .lock-pill-center {
+      display: flex;
+      justify-content: center;
+    }
+    .lock-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: white;
+      border: 1px solid var(--border);
+      border-radius: var(--r-pill);
+      padding: 9px 17px;
+      font-family: 'Inter', sans-serif;
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--t-mid);
+      box-shadow: var(--shadow-pill);
+      white-space: nowrap;
+      cursor: pointer;
+      transition: box-shadow .15s, transform .12s;
+    }
+    .lock-pill:active { transform: scale(.97); }
+    .key-icon {
+      width: 16px;
+      height: 16px;
+      flex-shrink: 0;
+      display: block;
+    }
+
+    /* ───────────────────────────────────────────────────────────────
+       STATS PAIR  (980:1753)
+       Two side-by-side cards, both locked/blurred
+    ─────────────────────────────────────────────────────────────── */
+    .stats-pair {
+      display: flex;
+      gap: 16px;
+    }
+    .stat-card {
+      flex: 1;
+      min-width: 0;
+      background: var(--card);
+      border-radius: var(--r-card);
+      box-shadow: var(--shadow-block);
+      padding: 16px;
+    }
+    .stat-title {
+      font-family: 'Krona One', sans-serif;
+      font-size: 14px;
+      font-weight: 400;
+      color: var(--t-dark);
+      line-height: 1.4;
+      text-transform: lowercase;
+      margin-bottom: 8px;
+    }
+    .stat-num-row {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      height: 45px;
+      margin-bottom: 4px;
+    }
+    .stat-num-row--locked {
+      filter: blur(7px);
+      pointer-events: none;
+      user-select: none;
+    }
+    .stat-num {
+      font-family: 'Krona One', sans-serif;
+      font-size: 32px;
+      color: var(--t-black);
+      line-height: 1.4;
+    }
+    .stat-denom {
+      font-family: 'Krona One', sans-serif;
+      font-size: 24px;
+      color: var(--primary-lt);
+      line-height: 1.4;
+      text-transform: lowercase;
+    }
+    .stat-note {
+      font-family: 'Poppins', sans-serif;
+      font-size: 10px;
+      font-weight: 400;
+      color: var(--t-dark);
+      line-height: 1.2;
+    }
+
+    /* ───────────────────────────────────────────────────────────────
+       NOTES CARD  (980:1774)
+    ─────────────────────────────────────────────────────────────── */
+    .notes-card > .card-title { margin-bottom: 0; }
+
+    .note-row {
+      display: flex;
+      align-items: center;
+      padding: 9px 0;
+      gap: 0;
+    }
+    .note-row + .note-row {
+      border-top: 1px solid var(--border);
+    }
+    .note-row--locked {
+      filter: blur(3px);
+      pointer-events: none;
+      user-select: none;
+    }
+
+    .note-user {
+      display: flex;
+      flex: 1;
+      min-width: 0;
+      align-items: center;
+      gap: 8px;
+    }
+    .note-user--tagged {
+      gap: 16px;
+    }
+
+    .note-icon-wrap {
+      width: 26px;
+      height: 26px;
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+    .note-icon-wrap img {
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
+    .note-icon-fallback {
+      font-size: 14px;
+      color: var(--t-gray);
+    }
+
+    .note-info {
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+      min-width: 0;
+    }
+    .note-name {
+      font-family: 'Poppins', sans-serif;
+      font-size: 14px;
+      font-weight: 400;
+      color: var(--t-black);
+      white-space: nowrap;
+      line-height: normal;
+    }
+    .note-tags {
+      font-family: 'Poppins', sans-serif;
+      font-size: 12px;
+      font-weight: 400;
+      color: var(--t-gray);
+      letter-spacing: .24px;
+      line-height: 14px;
+    }
+    .note-pct {
+      font-family: 'Poppins', sans-serif;
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--t-black);
+      text-align: right;
+      line-height: 24px;
+      flex-shrink: 0;
+      margin-left: auto;
+      padding-left: 8px;
+    }
+
+    /* ───────────────────────────────────────────────────────────────
+       APP CTA CARD  (993:10110)
+    ─────────────────────────────────────────────────────────────── */
+    .cta-card {
+      background: linear-gradient(83.6deg, #EEF5FB 14%, #E8F7F1 100%);
+      border: 1px solid rgba(67,149,199,0.14);
+      border-radius: var(--r-cta);
+      box-shadow: none;
+      padding: 24px 16px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      /* no overflow:hidden — allow shadow on app icon */
+    }
+
+    .cta-app-icon {
+      width:  60px;
+      height: 60px;
+      background: white;
+      border-radius: 15px;
+      box-shadow: var(--shadow-icon);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      margin-bottom: 18px;
+      flex-shrink: 0;
+    }
+
+    /* 18px spacer in Figma */
+    .cta-spacer { height: 18px; width: 1px; }
+
+    .cta-title {
+      font-family: 'Krona One', sans-serif;
+      font-size: 24px;
+      font-weight: 400;
+      color: var(--t-black);
+      line-height: 1.4;
+      text-transform: lowercase;
+      width: 100%;
+      text-align: left;
+      margin-bottom: 4px;
+    }
+    .cta-desc {
+      font-family: 'Poppins', sans-serif;
+      font-size: 14px;
+      font-weight: 400;
+      color: var(--t-dark);
+      line-height: 1.5;
+      width: 100%;
+      text-align: left;
+      margin-bottom: 18px;
+    }
+
+    /* 18px spacer */
+    .cta-spacer2 { height: 18px; width: 1px; }
+
+    .cta-features {
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      margin-bottom: 18px;
+    }
+    .cta-feature {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+    }
+    .check-icon {
+      width:  24px;
+      height: 24px;
+      border-radius: 12px;
+      background: var(--primary-100);
+      flex-shrink: 0;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .check-icon img {
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
+    .cta-feature-text {
+      font-family: 'Inter', sans-serif;
+      font-size: 16px;
+      font-weight: 400;
+      color: var(--primary-700);
+      line-height: 24px;
+    }
+
+    /* Store buttons */
+    .store-btns {
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .store-btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 52px;
+      width: 180px;
+      flex-shrink: 0;
+      transition: opacity .15s, transform .1s;
+    }
+    .store-btn:active { opacity: .88; transform: scale(.98); }
+
+    /* App Store — black pill */
+    .store-btn--ios {
+      background: #000;
+      border-radius: 10px;
+      padding: 0 16px;
+      gap: 8px;
+      color: #fff;
+    }
+    .ios-apple-icon {
+      width: 21px;
+      height: 26px;
+      flex-shrink: 0;
+    }
+    .ios-text-group {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      line-height: 1;
+    }
+    .ios-small-text {
+      font-family: 'Inter', sans-serif;
+      font-size: 9.5px;
+      font-weight: 400;
+      letter-spacing: .25px;
+      color: #fff;
+    }
+    .ios-big-text {
+      font-family: 'Inter', sans-serif;
+      font-size: 16px;
+      font-weight: 600;
+      letter-spacing: -.2px;
+      color: #fff;
+      line-height: 1.2;
+    }
+
+    /* Google Play — use Figma asset image (stored flipped, needs scaleY(-1)) */
+    .store-btn--android {
+      border-radius: 10px;
+      overflow: hidden;
+      padding: 0;
+    }
+    .store-btn--android img {
+      width:  180px;
+      height: 52px;
+      object-fit: contain;
+      display: block;
+      /* Figma asset is stored upside-down with -scale-y transform applied in design */
+      transform: scaleY(-1);
+    }
+
+    /* ───────────────────────────────────────────────────────────────
+       ATTRIBUTION FOOTER  (980:1984)
+    ─────────────────────────────────────────────────────────────── */
+    .attribution {
+      position: relative;
+      z-index: 1;
+      font-family: 'Poppins', sans-serif;
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--t-gray);
+      line-height: 1.3;
+      padding: 8px var(--px) 20px;
+    }
+    .attribution a {
+      font-weight: 700;
+      text-decoration: underline;
+      text-decoration-color: rgba(160,163,189,.4);
+    }
+
+    /* ───────────────────────────────────────────────────────────────
+       FIXED CTA BAR  (993:10229) — mobile + tablet only
+    ─────────────────────────────────────────────────────────────── */
+    .fixed-bar {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      z-index: 200;
+      height: var(--bar-h);
+      background: rgba(255,255,255,0.92);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border-top: 1px solid var(--border);
+      box-shadow: var(--shadow-bar);
+      padding: 12px 16px;
+      padding-bottom: calc(12px + env(safe-area-inset-bottom, 0px));
+      display: flex;
+      align-items: center;
+      /* slide-down when hidden */
+      transition: transform .28s cubic-bezier(.4,0,.2,1), opacity .28s ease;
+    }
+    .fixed-bar.is-hidden {
+      transform: translateY(105%);
+      opacity: 0;
+    }
+
+    .fixed-bar-inner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      width: 100%;
+      max-width: 600px;
+      margin: 0 auto;
+      gap: 12px;
+      overflow: hidden;
+    }
+    .fixed-bar-text { flex: 1; min-width: 0; }
+    .fixed-bar-name {
+      font-family: 'Inter', sans-serif;
+      font-size: 13.5px;
+      font-weight: 600;
+      color: #1a1a1a;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      line-height: normal;
+    }
+    .fixed-bar-sub {
+      font-family: 'Inter', sans-serif;
+      font-size: 12px;
+      font-weight: 400;
+      color: var(--t-mid);
+      line-height: normal;
+    }
+    .fixed-bar-btn {
+      display: inline-flex;
+      align-items: center;
+      background: var(--grad);
+      color: #fff;
+      font-family: 'Inter', sans-serif;
+      font-size: 14px;
+      font-weight: 600;
+      padding: 12px 20px;
+      border-radius: 14px;
+      white-space: nowrap;
+      flex-shrink: 0;
+      transition: opacity .15s, transform .1s;
+    }
+    .fixed-bar-btn:active { transform: scale(.97); opacity: .9; }
+
+    /* ───────────────────────────────────────────────────────────────
+       ANIMATIONS
+    ─────────────────────────────────────────────────────────────── */
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(22px); }
+      to   { opacity: 1; transform: translateY(0);     }
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to   { opacity: 1; }
+    }
+
+    /* Animated elements start invisible */
+    [data-animate] { opacity: 0; }
+    [data-animate].is-visible {
+      animation: fadeUp .45s ease forwards;
+    }
+
+    /* Hero image entrance */
+    .hero-scroll-clip { animation: fadeIn .55s ease .08s forwards; opacity: 0; }
+
+
+    /* ───────────────────────────────────────────────────────────────
+       RESPONSIVE — tablet (≥ 600px)
+    ─────────────────────────────────────────────────────────────── */
+    @media (min-width: 600px) {
+      :root { --px: 24px; }
+
+      .store-btns {
+        flex-direction: row;
+        justify-content: center;
+      }
+    }
+
+
+    /* ───────────────────────────────────────────────────────────────
+       RESPONSIVE — desktop (≥ 900px)
+    ─────────────────────────────────────────────────────────────── */
+    @media (min-width: 900px) {
+      body { padding-bottom: 0; }
+      :root { --px: 0px; }
+
+      /* hide fixed bar on desktop */
+      .fixed-bar { display: none; }
+
+      /* hero: horizontal layout */
+      .hero {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 56px;
+        padding: 40px 32px 32px;
+      }
+      .hero-scroll-clip {
+        /* reset overflow on desktop so reflection doesn't peek */
+        overflow: hidden;
+        width: 320px;
+        flex-shrink: 0;
+        padding: 0;
+        border-radius: 20px;
+      }
+      .hero-slide-track {
+        padding: 0;
+        gap: 0;
+      }
+      .bottle-frame--reflect { display: none; }
+      .page-dots {
+        display: none; /* hide dots on desktop */
+      }
+
+      /* hero right column (desktop info) */
+      .hero-desktop-meta {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+        flex: 1;
+        max-width: 400px;
+      }
+
+      /* page: 2-column card grid */
+      .page {
+        max-width: 860px;
+        margin: 0 auto;
+        padding: 16px 32px 16px;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 10px;
+        align-items: start;
+      }
+
+      .card--full      { grid-column: 1 / -1; }
+      .stats-pair      { grid-column: 1 / -1; }
+      .card--identity  { display: none; } /* shown in hero-desktop-meta on desktop */
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- ══════════════════════════════════════════════════════════════
+       DECORATIVE BLUE BUBBLES
+  ══════════════════════════════════════════════════════════════ -->
+  <div class="bubbles-bg" aria-hidden="true">
+    <img class="bubble bubble--tl"
+         src="https://www.figma.com/api/mcp/asset/f7761206-cda3-4bee-9e94-4308604cead3"
+         alt=""
+         onerror="this.style.display='none'">
+    <img class="bubble bubble--br"
+         src="https://www.figma.com/api/mcp/asset/b1e804af-d52c-4fac-ab72-81d8b6459437"
+         alt=""
+         onerror="this.style.display='none'">
+  </div>
+
+
+  <!-- ══════════════════════════════════════════════════════════════
+       HEADER  (993:8628)
+  ══════════════════════════════════════════════════════════════ -->
+  <header class="site-header">
+    <a href="#download" aria-label="Scented home">
+      <!-- DYNAMIC: Scented logo -->
+      <img
+        class="header-logo"
+        src="https://www.figma.com/api/mcp/asset/470da343-a4a3-4cdc-a99a-809a070c36d3"
+        alt="Scented.ai"
+        onerror="this.style.display='none'; this.nextElementSibling.style.display='inline';">
+      <span class="header-logo-fallback" style="display:none">Scented</span>
+    </a>
+
+    <!-- DYNAMIC: href → app store deep link -->
+    <a href="#download" class="header-btn">Get the App</a>
+  </header>
+
+
+  <!-- ══════════════════════════════════════════════════════════════
+       HERO  (980:1645)
+       Bottle image + blurred reflection + page indicator dots
+  ══════════════════════════════════════════════════════════════ -->
+  <section class="hero">
+    <!-- overflow:hidden clip for the reflection peek -->
+    <div class="hero-scroll-clip">
+      <div class="hero-slide-track">
+
+        <!-- Main bottle image -->
+        <div class="bottle-frame">
+          <!-- DYNAMIC: bottle image URL + alt -->
+          <img
+            class="bottle-img"
+            src="https://www.figma.com/api/mcp/asset/2be03ad7-2fa7-4a91-bbe7-0cc4ca74d284"
+            alt="Blanche Bête by Les Liquides Imaginaires"
+            data-dynamic="bottle-image"
+            onerror="this.style.background='#f0f0f0'; this.style.minHeight='200px';">
+        </div>
+
+        <!-- Blurred reflection (next-slide carousel peek) -->
+        <div class="bottle-frame bottle-frame--reflect" aria-hidden="true">
+          <img
+            class="bottle-img"
+            src="https://www.figma.com/api/mcp/asset/2be03ad7-2fa7-4a91-bbe7-0cc4ca74d284"
+            alt=""
+            onerror="this.style.display='none'">
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Page indicator dots (3 images) -->
+    <div class="page-dots" role="tablist" aria-label="Image 1 of 3">
+      <span class="dot dot--active" role="tab" aria-selected="true"  aria-label="Image 1"></span>
+      <span class="dot dot--empty"  role="tab" aria-selected="false" aria-label="Image 2"></span>
+      <span class="dot dot--empty"  role="tab" aria-selected="false" aria-label="Image 3"></span>
+    </div>
+
+    <!-- Desktop-only: identity info column (right of bottle) -->
+    <div class="hero-desktop-meta" aria-hidden="true">
+      <div class="identity-top">
+        <span class="house-name">Les Liquides Imaginaires</span>
+        <span class="dot-sep" aria-hidden="true"></span>
+        <span class="perfumer-row">Perfumer <span class="perfumer-name">Louise Turner</span></span>
+      </div>
+      <h2 class="perfume-title" style="font-size:32px;line-height:1.1;margin:6px 0 8px;">Blanche Bête</h2>
+      <div class="meta-strip">
+        <span>Eau de Parfum</span>
+        <span class="meta-sep">|</span>
+        <span>Unisex</span>
+        <span class="meta-sep">|</span>
+        <span>2021</span>
+        <span class="meta-sep">|</span>
+        <span class="meta-disc">DISCONTINUED</span>
+      </div>
+      <div class="rating-tiles" style="margin-top:12px;">
+        <div class="tile">
+          <div class="tile-score-row">
+            <img class="tile-icon" src="https://www.figma.com/api/mcp/asset/a3f1152c-4539-4543-8271-9bb7946ca4d1" alt="" onerror="this.style.display='none'">
+            <span class="tile-num">8</span><span class="tile-denom">/10</span>
+          </div>
+          <span class="tile-label">quality</span>
+        </div>
+        <div class="tile">
+          <div class="tile-score-row">
+            <img class="tile-icon" src="https://www.figma.com/api/mcp/asset/a404bb0e-f610-4994-9b37-1a2235c748fe" alt="" onerror="this.style.display='none'">
+            <span class="tile-num">7</span><span class="tile-denom">/10</span>
+          </div>
+          <span class="tile-label">appeal</span>
+        </div>
+        <div class="tile">
+          <div class="tile-score-row">
+            <img class="tile-icon" src="https://www.figma.com/api/mcp/asset/ed923d5b-2c43-4a3f-8273-bb0403bdba8b" alt="" onerror="this.style.display='none'">
+            <span class="tile-num">6</span><span class="tile-denom">/10</span>
+          </div>
+          <span class="tile-label">originality</span>
+        </div>
+      </div>
+      <p class="description" style="margin-top:12px;">
+        This is the scent that launched a thousand ships (and countless compliments): a modern
+        classic that's both ubiquitous and undeniably appealing.
+      </p>
+    </div>
+
+  </section>
+
+
+  <!-- ══════════════════════════════════════════════════════════════
+       CARDS
+  ══════════════════════════════════════════════════════════════ -->
+  <main class="page">
+
+    <!-- ── IDENTITY CARD  (980:1653) ─────────────────────────── -->
+    <div class="card card--full card--identity" data-animate>
+
+      <!-- Row 1: house · dot · perfumer -->
+      <div class="identity-top">
+        <!-- DYNAMIC: house name -->
+        <span class="house-name" data-dynamic="house">Les Liquides Imaginaires</span>
+        <span class="dot-sep" aria-hidden="true"></span>
+        <!-- DYNAMIC: perfumer -->
+        <span class="perfumer-row" data-dynamic="perfumer-row">
+          Perfumer <span class="perfumer-name" data-dynamic="perfumer-name">Louise Turner</span>
+        </span>
+      </div>
+
+      <!-- Row 2: perfume name -->
+      <!-- DYNAMIC: perfume name -->
+      <h1 class="perfume-title" data-dynamic="name">Blanche Bête</h1>
+
+      <!-- Row 3: metadata strip -->
+      <!-- DYNAMIC: concentration | gender | year | discontinued? -->
+      <div class="meta-strip" data-dynamic="meta-strip">
+        <span data-dynamic="concentration">Eau de Parfum</span>
+        <span class="meta-sep">|</span>
+        <span data-dynamic="gender">Unisex</span>
+        <span class="meta-sep">|</span>
+        <span data-dynamic="year">2021</span>
+        <span class="meta-sep">|</span>
+        <!-- DYNAMIC: hide if not discontinued -->
+        <span class="meta-disc" data-dynamic="discontinued-label">DISCONTINUED</span>
+      </div>
+
+      <!-- Row 4: rating tiles -->
+      <div class="rating-tiles" data-dynamic="rating-tiles">
+
+        <!-- Quality tile -->
+        <div class="tile">
+          <div class="tile-score-row">
+            <img class="tile-icon"
+                 src="https://www.figma.com/api/mcp/asset/a3f1152c-4539-4543-8271-9bb7946ca4d1"
+                 alt=""
+                 onerror="this.style.display='none'">
+            <!-- DYNAMIC: quality score -->
+            <span class="tile-num" data-dynamic="score-quality">8</span>
+            <span class="tile-denom">/10</span>
+          </div>
+          <span class="tile-label">quality</span>
+        </div>
+
+        <!-- Appeal tile -->
+        <div class="tile">
+          <div class="tile-score-row">
+            <img class="tile-icon"
+                 src="https://www.figma.com/api/mcp/asset/a404bb0e-f610-4994-9b37-1a2235c748fe"
+                 alt=""
+                 onerror="this.style.display='none'">
+            <!-- DYNAMIC: appeal score -->
+            <span class="tile-num" data-dynamic="score-appeal">7</span>
+            <span class="tile-denom">/10</span>
+          </div>
+          <span class="tile-label">appeal</span>
+        </div>
+
+        <!-- Originality tile -->
+        <div class="tile">
+          <div class="tile-score-row">
+            <img class="tile-icon"
+                 src="https://www.figma.com/api/mcp/asset/ed923d5b-2c43-4a3f-8273-bb0403bdba8b"
+                 alt=""
+                 onerror="this.style.display='none'">
+            <!-- DYNAMIC: originality score -->
+            <span class="tile-num" data-dynamic="score-originality">6</span>
+            <span class="tile-denom">/10</span>
+          </div>
+          <span class="tile-label">originality</span>
+        </div>
+
+      </div><!-- /rating-tiles -->
+
+      <!-- Row 5: description -->
+      <div class="desc-wrap">
+        <!-- DYNAMIC: description text (full) -->
+        <p class="description" id="desc-text" data-dynamic="description">
+          This is the scent that launched a thousand ships (and countless compliments): a modern
+          classic that's both ubiquitous and undeniably appealing.
+        </p>
+        <button class="read-more-btn" id="read-more-btn" aria-expanded="false">Read more</button>
+      </div>
+
+    </div><!-- /identity card -->
+
+
+    <!-- ── SCENT PROFILE CARD  (980:1720) ────────────────────── -->
+    <div class="card card--full scent-card" data-animate>
+      <h2 class="card-title">Scent profile</h2>
+
+      <div class="scent-sliders">
+
+        <!-- VISIBLE: smoky ←→ fresh (dot at 46.33%) -->
+        <div class="scent-row" data-dynamic="scent-smoky-fresh">
+          <span class="scent-label scent-label--l">smoky</span>
+          <div class="scent-track">
+            <div class="scent-dot" style="left:46.33%" data-dynamic="scent-dot-smoky-fresh"></div>
+          </div>
+          <span class="scent-label scent-label--r">fresh</span>
+        </div>
+
+        <!-- VISIBLE: sweet ←→ aromatic (dot at 5.08%) -->
+        <div class="scent-row" data-dynamic="scent-sweet-aromatic">
+          <span class="scent-label scent-label--l">sweet</span>
+          <div class="scent-track">
+            <div class="scent-dot" style="left:5.08%" data-dynamic="scent-dot-sweet-aromatic"></div>
+          </div>
+          <span class="scent-label scent-label--r">aromatic</span>
+        </div>
+
+        <!-- LOCKED: inoffensive ←→ bold -->
+        <div class="scent-row scent-row--locked" aria-hidden="true" data-dynamic="scent-inoffensive-bold">
+          <span class="scent-label scent-label--l">inoffensive</span>
+          <div class="scent-track">
+            <div class="scent-dot" style="left:46.82%"></div>
+          </div>
+          <span class="scent-label scent-label--r">bold</span>
+        </div>
+
+        <!-- LOCKED: light ←→ rich -->
+        <div class="scent-row scent-row--locked" aria-hidden="true" data-dynamic="scent-light-rich">
+          <span class="scent-label scent-label--l">light</span>
+          <div class="scent-track">
+            <div class="scent-dot" style="left:19.21%"></div>
+          </div>
+          <span class="scent-label scent-label--r">rich</span>
+        </div>
+
+        <!-- LOCKED: energetic ←→ warm -->
+        <div class="scent-row scent-row--locked" aria-hidden="true" data-dynamic="scent-energetic-warm">
+          <span class="scent-label scent-label--l">energetic</span>
+          <div class="scent-track">
+            <div class="scent-dot" style="left:19.21%"></div>
+          </div>
+          <span class="scent-label scent-label--r">warm</span>
+        </div>
+
+      </div><!-- /scent-sliders -->
+
+      <!-- Lock pill -->
+      <div class="lock-pill-center">
+        <button class="lock-pill" onclick="document.getElementById('download').scrollIntoView({behavior:'smooth'})">
+          <!-- key icon -->
+          <img
+            class="key-icon"
+            src="https://www.figma.com/api/mcp/asset/0e2def04-fc53-4723-8a4c-85dcc68f0d5d"
+            alt=""
+            onerror="this.outerHTML='<svg class=\'key-icon\' viewBox=\'0 0 16 16\' fill=\'none\' xmlns=\'http://www.w3.org/2000/svg\'><rect x=\'3\' y=\'8\' width=\'10\' height=\'7\' rx=\'1.5\' stroke=\'#888\' stroke-width=\'1.4\'/><path d=\'M5.5 8V6a2.5 2.5 0 0 1 5 0v2\' stroke=\'#888\' stroke-width=\'1.4\'/><circle cx=\'8\' cy=\'12\' r=\'1\' fill=\'#888\'/></svg>'">
+          See full info in app
+        </button>
+      </div>
+
+    </div><!-- /scent card -->
+
+
+    <!-- ── STATS PAIR  (980:1753) ─────────────────────────────── -->
+    <!-- Both Projection and Longevity are locked/blurred per Figma -->
+    <div class="stats-pair" data-animate>
+
+      <!-- Projection -->
+      <div class="stat-card">
+        <h3 class="stat-title">Projection</h3>
+        <div class="stat-num-row stat-num-row--locked">
+          <!-- DYNAMIC: projection-score -->
+          <span class="stat-num" data-dynamic="projection-score">5</span>
+          <span class="stat-denom">/10</span>
+        </div>
+        <!-- DYNAMIC: projection-note -->
+        <p class="stat-note" data-dynamic="projection-note">top 90% in the world</p>
+      </div>
+
+      <!-- Longevity -->
+      <div class="stat-card">
+        <h3 class="stat-title">Longevity</h3>
+        <div class="stat-num-row stat-num-row--locked">
+          <!-- DYNAMIC: longevity-score -->
+          <span class="stat-num" data-dynamic="longevity-score">5</span>
+          <span class="stat-denom">/10</span>
+        </div>
+        <!-- DYNAMIC: longevity-note -->
+        <p class="stat-note" data-dynamic="longevity-note">top 10% in the world</p>
+      </div>
+
+    </div><!-- /stats-pair -->
+
+
+    <!-- ── NOTES CARD  (980:1774) ─────────────────────────────── -->
+    <div class="card notes-card" data-animate>
+      <h2 class="card-title">most perceived notes</h2>
+
+      <!-- Note 1: Caramel — VISIBLE, with tags -->
+      <div class="note-row">
+        <div class="note-user note-user--tagged">
+          <div style="display:flex;align-items:center;gap:8px;">
+            <div class="note-icon-wrap">
+              <img
+                src="https://www.figma.com/api/mcp/asset/182a6d6e-d42d-4b91-afb3-89b9f80b35b9"
+                alt=""
+                onerror="this.style.display='none'; this.parentElement.innerHTML='<span class=\'note-icon-fallback\'>⌘</span>'">
+            </div>
+            <!-- DYNAMIC: note-1-name -->
+            <span class="note-name" data-dynamic="note-1-name">Caramel</span>
+          </div>
+          <!-- DYNAMIC: note-1-tags -->
+          <div style="display:flex;align-items:center;gap:4px;">
+            <span class="note-tags" data-dynamic="note-1-tags">photorealistic</span>
+            <span style="width:4px;height:4px;border-radius:50%;background:#a0a3bd;flex-shrink:0;display:inline-block;"></span>
+            <span class="note-tags">spicy</span>
+          </div>
+        </div>
+        <!-- DYNAMIC: note-1-pct -->
+        <span class="note-pct" data-dynamic="note-1-pct">100%</span>
+      </div>
+
+      <!-- Note 2: Vanilla — VISIBLE -->
+      <div class="note-row">
+        <div class="note-user">
+          <div class="note-icon-wrap">
+            <img
+              src="https://www.figma.com/api/mcp/asset/182a6d6e-d42d-4b91-afb3-89b9f80b35b9"
+              alt=""
+              onerror="this.style.display='none'">
+          </div>
+          <!-- DYNAMIC: note-2-name -->
+          <span class="note-name" data-dynamic="note-2-name">Vanilla</span>
+        </div>
+        <!-- DYNAMIC: note-2-pct -->
+        <span class="note-pct" data-dynamic="note-2-pct">100%</span>
+      </div>
+
+      <!-- Note 3: Cinnamon — LOCKED -->
+      <div class="note-row note-row--locked" aria-hidden="true" data-dynamic="note-3">
+        <div class="note-user">
+          <div class="note-icon-wrap">
+            <img src="https://www.figma.com/api/mcp/asset/182a6d6e-d42d-4b91-afb3-89b9f80b35b9" alt="">
+          </div>
+          <span class="note-name">Cinnamon</span>
+        </div>
+        <span class="note-pct">100%</span>
+      </div>
+
+      <!-- Note 4: Cedar — LOCKED, with tag -->
+      <div class="note-row note-row--locked" aria-hidden="true" data-dynamic="note-4">
+        <div class="note-user note-user--tagged">
+          <div style="display:flex;align-items:center;gap:8px;">
+            <div class="note-icon-wrap">
+              <img src="https://www.figma.com/api/mcp/asset/182a6d6e-d42d-4b91-afb3-89b9f80b35b9" alt="">
+            </div>
+            <span class="note-name">Cedar</span>
+          </div>
+          <span class="note-tags">plasticky</span>
+        </div>
+        <span class="note-pct">100%</span>
+      </div>
+
+    </div><!-- /notes card -->
+
+
+    <!-- ── APP CTA CARD  (993:10110) ──────────────────────────── -->
+    <div class="cta-card" id="cta-card" data-animate>
+
+      <!-- App icon (Scented logo SVG inside white rounded square) -->
+      <div class="cta-app-icon">
+        <svg width="38" height="49" viewBox="28 0 192 256" fill="none" xmlns="http://www.w3.org/2000/svg" aria-label="Scented app icon">
+          <defs>
+            <linearGradient id="cta-g" x1="8" y1="227" x2="240" y2="26" gradientUnits="userSpaceOnUse">
+              <stop stop-color="#4395C7"/>
+              <stop offset="1" stop-color="#89E8C9"/>
+            </linearGradient>
+          </defs>
+          <!-- Left arc -->
+          <mask id="cta-m0" style="mask-type:luminance" maskUnits="userSpaceOnUse" x="30" y="67" width="119" height="187">
+            <path d="M140.942 212.05C131.454 202.562 116.074 202.562 106.586 212.05C97.0982 221.538 81.7184 221.538 72.2303 212.05L72.213 212.067C62.7422 202.579 62.7465 187.208 72.2303 177.728L72.213 177.711C81.7184 168.205 81.7184 152.826 72.2303 143.338C62.7422 133.849 62.7422 118.47 72.2303 108.981L72.1957 108.947C81.6838 99.4588 81.6838 84.0789 72.1957 74.5908C62.7076 65.1027 47.3278 65.1027 37.8397 74.5908C28.3516 84.0789 28.3516 99.4588 37.8397 108.947C47.3278 118.435 47.3278 133.815 37.8397 143.303L37.857 143.32C28.3516 152.826 28.3516 168.205 37.8397 177.694C47.3278 187.182 47.3278 202.562 37.8397 212.05L37.857 212.067C28.3516 221.572 28.3516 236.952 37.8397 246.44C42.5859 251.187 48.8104 253.56 55.035 253.555C61.2595 253.56 67.4841 251.191 72.2303 246.44C81.8827 236.961 97.1242 237.008 106.552 246.436L106.586 246.401C116.074 255.89 131.454 255.89 140.942 246.401C150.431 236.913 150.431 221.533 140.942 212.045Z" fill="white"/>
+          </mask>
+          <g mask="url(#cta-m0)"><rect x="28" y="0" width="192" height="256" fill="url(#cta-g)"/></g>
+          <!-- Right arc -->
+          <mask id="cta-m1" style="mask-type:luminance" maskUnits="userSpaceOnUse" x="99" y="67" width="118" height="187">
+            <path d="M209.685 143.337C200.197 133.849 200.197 118.47 209.685 108.981L209.672 108.968C219.173 99.4674 219.173 84.0875 209.685 74.5994C206.711 71.6255 203.162 69.5852 199.393 68.4786C191.128 66.032 181.817 68.068 175.294 74.5908C165.599 84.0746 150.387 84.0141 140.973 74.5994L140.938 74.634C131.45 65.1459 116.07 65.1459 106.582 74.634C97.094 84.1221 97.094 99.5019 106.582 108.99C116.07 118.478 131.45 118.478 140.938 108.99C150.426 99.5019 165.806 99.5019 175.294 108.99L175.316 108.968C184.782 118.457 184.778 133.823 175.294 143.303L175.312 143.32C165.806 152.826 165.806 168.205 175.294 177.694C184.782 187.182 184.782 202.561 175.294 212.05L175.329 212.084C165.841 221.572 165.841 236.952 175.329 246.44C184.817 255.928 200.197 255.928 209.685 246.44C219.173 236.952 219.173 221.572 209.685 212.084C200.197 202.596 200.197 187.216 209.685 177.728L209.668 177.711C219.173 168.205 219.173 152.826 209.685 143.337Z" fill="white"/>
+          </mask>
+          <g mask="url(#cta-m1)"><rect x="28" y="0" width="192" height="256" fill="url(#cta-g)"/></g>
+          <!-- Top dot -->
+          <mask id="cta-m2" style="mask-type:luminance" maskUnits="userSpaceOnUse" x="99" y="0" width="50" height="49">
+            <path d="M123.756 48.5861C137.172 48.5861 148.049 37.7097 148.049 24.293C148.049 10.8764 137.172 0 123.756 0C110.339 0 99.4626 10.8764 99.4626 24.293C99.4626 37.7097 110.339 48.5861 123.756 48.5861Z" fill="white"/>
+          </mask>
+          <g mask="url(#cta-m2)"><rect x="28" y="0" width="192" height="256" fill="url(#cta-g)"/></g>
+        </svg>
+      </div>
+
+      <!-- Heading + description -->
+      <h2 class="cta-title">see the full picture</h2>
+      <p class="cta-desc">
+        Get Scented.ai app to unlock the complete analysis for this fragrance and discover
+        thousands more.
+      </p>
+
+      <!-- Check-feature list -->
+      <ul class="cta-features">
+        <li class="cta-feature">
+          <div class="check-icon">
+            <img
+              src="https://www.figma.com/api/mcp/asset/7cfea25d-8e66-413c-8c14-a4b77fdf581f"
+              alt="✓"
+              onerror="this.outerHTML='<svg width=\'14\' height=\'10\' viewBox=\'0 0 14 10\' fill=\'none\'><path d=\'M1 5l4 4L13 1\' stroke=\'#569ea1\' stroke-width=\'2\' stroke-linecap=\'round\' stroke-linejoin=\'round\'/></svg>'">
+          </div>
+          <span class="cta-feature-text">Full scent profile &amp; all notes</span>
+        </li>
+        <li class="cta-feature">
+          <div class="check-icon">
+            <img
+              src="https://www.figma.com/api/mcp/asset/7cfea25d-8e66-413c-8c14-a4b77fdf581f"
+              alt="✓"
+              onerror="this.outerHTML='<svg width=\'14\' height=\'10\' viewBox=\'0 0 14 10\' fill=\'none\'><path d=\'M1 5l4 4L13 1\' stroke=\'#569ea1\' stroke-width=\'2\' stroke-linecap=\'round\' stroke-linejoin=\'round\'/></svg>'">
+          </div>
+          <span class="cta-feature-text">Projection, longevity &amp; season guide</span>
+        </li>
+        <li class="cta-feature">
+          <div class="check-icon">
+            <img
+              src="https://www.figma.com/api/mcp/asset/7cfea25d-8e66-413c-8c14-a4b77fdf581f"
+              alt="✓"
+              onerror="this.outerHTML='<svg width=\'14\' height=\'10\' viewBox=\'0 0 14 10\' fill=\'none\'><path d=\'M1 5l4 4L13 1\' stroke=\'#569ea1\' stroke-width=\'2\' stroke-linecap=\'round\' stroke-linejoin=\'round\'/></svg>'">
+          </div>
+          <span class="cta-feature-text">Similar fragrances you'll love</span>
+        </li>
+      </ul>
+
+      <!-- Store buttons -->
+      <div class="store-btns" id="download">
+
+        <!-- App Store -->
+        <!-- DYNAMIC: href → iOS app store URL -->
+        <a href="#" class="store-btn store-btn--ios" data-dynamic="app-store-url" aria-label="Download on the App Store">
+          <!-- Apple SF-style logo -->
+          <svg class="ios-apple-icon" viewBox="0 0 22 27" fill="white" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <path d="M18.36 14.23c-.04-3.7 3.02-5.49 3.16-5.57-1.72-2.51-4.39-2.86-5.35-2.9-2.28-.23-4.46 1.35-5.62 1.35-1.16 0-2.93-1.32-4.82-1.29C3.25 5.86.93 7.29-.34 9.5c-2.59 4.48-.66 11.08 1.85 14.71 1.23 1.78 2.69 3.77 4.61 3.7 1.85-.07 2.55-1.19 4.79-1.19 2.23 0 2.88 1.19 4.85 1.15 1.99-.04 3.26-1.81 4.48-3.6 1.42-2.05 2-4.05 2.03-4.16-.05-.02-3.9-1.49-3.94-5.88zM14.74 3.82C15.76 2.59 16.44.94 16.25-.87c-1.59.07-3.52 1.06-4.66 2.26-1.01 1.07-1.92 2.79-1.67 4.43 1.78.14 3.6-.91 4.82-1.99z"/>
+          </svg>
+          <div class="ios-text-group">
+            <span class="ios-small-text">Download on the</span>
+            <span class="ios-big-text">App Store</span>
+          </div>
+        </a>
+
+        <!-- Google Play -->
+        <!-- DYNAMIC: href → Google Play URL -->
+        <a href="#" class="store-btn store-btn--android" data-dynamic="play-store-url" aria-label="Get it on Google Play">
+          <img
+            src="https://www.figma.com/api/mcp/asset/b69ed553-0ba1-4537-9a11-42405ff5c9bb"
+            alt="Get it on Google Play"
+            onerror="this.parentElement.innerHTML='<div style=\'background:#000;border-radius:10px;width:180px;height:52px;display:flex;align-items:center;justify-content:center;color:#fff;font-family:Inter,sans-serif;font-size:14px;font-weight:600\'>Google Play</div>'">
+        </a>
+
+      </div><!-- /store-btns -->
+
+    </div><!-- /cta card -->
+
+  </main><!-- /page -->
+
+
+  <!-- ══════════════════════════════════════════════════════════════
+       ATTRIBUTION FOOTER  (980:1984)
+  ══════════════════════════════════════════════════════════════ -->
+  <p class="attribution">
+    <!-- DYNAMIC: attribution + link -->
+    The Blanche Bête perfume bottle image is courtesy of FragranceX:&#32;
+    <a
+      href="https://www.fragrancex.com/products/liquides-imaginaires/belle-bete-perfume"
+      target="_blank"
+      rel="noopener"
+      data-dynamic="attribution-url">Blanche Bête</a>
+  </p>
+
+
+  <!-- ══════════════════════════════════════════════════════════════
+       FIXED CTA BAR  (993:10229) — mobile + tablet only
+  ══════════════════════════════════════════════════════════════ -->
+  <div class="fixed-bar" id="fixed-bar" role="complementary" aria-label="Download the app">
+    <div class="fixed-bar-inner">
+      <div class="fixed-bar-text">
+        <!-- DYNAMIC: perfume name -->
+        <p class="fixed-bar-name" data-dynamic="bar-name">Blanche Bête</p>
+        <p class="fixed-bar-sub">Open full profile in Scented</p>
+      </div>
+      <!-- DYNAMIC: href → primary store link -->
+      <a href="#download" class="fixed-bar-btn">Get the App →</a>
+    </div>
+  </div>
+
+
+  <!-- ══════════════════════════════════════════════════════════════
+       JAVASCRIPT
+  ══════════════════════════════════════════════════════════════ -->
+  <script>
+
+    /* ─────────────────────────────────────────────────────────────
+       DATA CONTRACT
+       All [LOCKED] fields must be injected server-side before serving.
+       All other fields can be updated per fragrance.
+    ───────────────────────────────────────────────────────────── */
+    const PERFUME = {
+      id:            "blanche-bete",               // [LOCKED]
+      name:          "Blanche Bête",               // [LOCKED]
+      house:         "Les Liquides Imaginaires",   // [LOCKED]
+      perfumer:      "Louise Turner",              // [LOCKED]
+      concentration: "Eau de Parfum",             // [LOCKED]
+      gender:        "Unisex",                     // [LOCKED]
+      year:          2021,                         // [LOCKED]
+      discontinued:  true,                         // [LOCKED]
+      description:   "This is the scent that launched a thousand ships (and countless compliments): a modern classic that's both ubiquitous and undeniably appealing.",
+      imageUrl:      "PERFUME_IMAGE_URL",          // [LOCKED]
+      ogImageUrl:    "PERFUME_OG_IMAGE_URL",       // [LOCKED]
+      scores: {
+        quality:     8,                            // [LOCKED]
+        appeal:      7,                            // [LOCKED]
+        originality: 6,                            // [LOCKED]
+        projection:  5,                            // [LOCKED]
+        longevity:   5,                            // [LOCKED]
+      },
+      notes: [
+        { name: "Caramel",  pct: 100, tags: ["photorealistic","spicy"], locked: false },
+        { name: "Vanilla",  pct: 100, tags: [],                         locked: false },
+        { name: "Cinnamon", pct: 100, tags: [],                         locked: true  },
+        { name: "Cedar",    pct: 100, tags: ["plasticky"],              locked: true  },
+      ],
+      scentProfile: [
+        { left: "smoky",       right: "fresh",    value: 0.4633, locked: false },
+        { left: "sweet",       right: "aromatic", value: 0.0508, locked: false },
+        { left: "inoffensive", right: "bold",     value: 0.4682, locked: true  },
+        { left: "light",       right: "rich",     value: 0.1921, locked: true  },
+        { left: "energetic",   right: "warm",     value: 0.1921, locked: true  },
+      ],
+      appStoreUrl:   "#",                          // [LOCKED]
+      playStoreUrl:  "#",                          // [LOCKED]
+      attributionUrl:"https://www.fragrancex.com/products/liquides-imaginaires/belle-bete-perfume", // [LOCKED]
+    };
+
+
+    /* ─────────────────────────────────────────────────────────────
+       INTERSECTION OBSERVER — fade-up cards as they scroll in
+    ───────────────────────────────────────────────────────────── */
+    (function() {
+      var els = document.querySelectorAll('[data-animate]');
+      var io = new IntersectionObserver(function(entries) {
+        entries.forEach(function(e) {
+          if (e.isIntersecting) {
+            e.target.classList.add('is-visible');
+            io.unobserve(e.target);
+          }
+        });
+      }, { threshold: 0.06 });
+
+      els.forEach(function(el, i) {
+        el.style.animationDelay = (i * 0.07) + 's';
+        io.observe(el);
+      });
+    })();
+
+
+    /* ─────────────────────────────────────────────────────────────
+       FIXED BAR — hide when CTA card enters viewport
+    ───────────────────────────────────────────────────────────── */
+    (function() {
+      var bar  = document.getElementById('fixed-bar');
+      var cta  = document.getElementById('cta-card');
+      if (!bar || !cta) return;
+
+      var obs = new IntersectionObserver(function(entries) {
+        entries.forEach(function(e) {
+          bar.classList.toggle('is-hidden', e.isIntersecting);
+        });
+      }, { threshold: 0.08 });
+
+      obs.observe(cta);
+    })();
+
+
+    /* ─────────────────────────────────────────────────────────────
+       READ MORE toggle for description
+    ───────────────────────────────────────────────────────────── */
+    (function() {
+      var desc = document.getElementById('desc-text');
+      var btn  = document.getElementById('read-more-btn');
+      if (!desc || !btn) return;
+
+      // Hide button if text isn't actually clamped
+      function checkClamp() {
+        if (desc.scrollHeight <= desc.clientHeight + 2) {
+          btn.style.display = 'none';
+        }
+      }
+      // Run after fonts load
+      if (document.fonts) {
+        document.fonts.ready.then(checkClamp);
+      } else {
+        setTimeout(checkClamp, 500);
+      }
+
+      btn.addEventListener('click', function() {
+        var expanded = desc.classList.toggle('is-expanded');
+        btn.textContent = expanded ? 'Read less' : 'Read more';
+        btn.setAttribute('aria-expanded', expanded);
+      });
+    })();
+
+  </script>
+</body>
+</html>
