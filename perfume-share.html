@@ -418,6 +418,8 @@
       font-size: 16px;
       color: var(--t-black);
       line-height: 1.4;
+      filter: blur(4px);
+      user-select: none;
     }
     .tile-denom {
       font-family: 'Krona One', sans-serif;
@@ -425,6 +427,8 @@
       color: var(--t-gray);
       line-height: 1.4;
       text-transform: lowercase;
+      filter: blur(4px);
+      user-select: none;
     }
     .tile-label {
       font-family: 'Poppins', sans-serif;
@@ -582,6 +586,12 @@
       filter: blur(7px);
       pointer-events: none;
       user-select: none;
+    }
+    .stat-lock-icon {
+      height: 45px;
+      margin-bottom: 4px;
+      display: flex;
+      align-items: center;
     }
     .stat-num {
       font-family: 'Krona One', sans-serif;
@@ -1325,24 +1335,30 @@
       <!-- Projection -->
       <div class="stat-card">
         <h3 class="stat-title">Projection</h3>
-        <div class="stat-num-row stat-num-row--locked">
-          <!-- DYNAMIC: projection-score -->
-          <span class="stat-num" data-dynamic="projection-score">5</span>
-          <span class="stat-denom">/10</span>
+        <div class="stat-lock-icon">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M17 10H7C6.44772 10 6 10.4477 6 11V18C6 18.5523 6.44772 19 7 19H17C17.5523 19 18 18.5523 18 18V11C18 10.4477 17.5523 10 17 10Z" stroke="#393840" stroke-width="2" stroke-linejoin="round"/>
+            <path d="M9 10V7C9 5.15905 10.3432 4 12 4C13.6568 4 15 5.15905 15 7V10" stroke="#393840" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M12 14V15" stroke="#393840" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M3 9V15" stroke="#393840" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M21 9V15" stroke="#393840" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
         </div>
-        <!-- DYNAMIC: projection-note -->
         <p class="stat-note" data-dynamic="projection-note">top 90% in the world</p>
       </div>
 
       <!-- Longevity -->
       <div class="stat-card">
         <h3 class="stat-title">Longevity</h3>
-        <div class="stat-num-row stat-num-row--locked">
-          <!-- DYNAMIC: longevity-score -->
-          <span class="stat-num" data-dynamic="longevity-score">5</span>
-          <span class="stat-denom">/10</span>
+        <div class="stat-lock-icon">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M17 10H7C6.44772 10 6 10.4477 6 11V18C6 18.5523 6.44772 19 7 19H17C17.5523 19 18 18.5523 18 18V11C18 10.4477 17.5523 10 17 10Z" stroke="#393840" stroke-width="2" stroke-linejoin="round"/>
+            <path d="M9 10V7C9 5.15905 10.3432 4 12 4C13.6568 4 15 5.15905 15 7V10" stroke="#393840" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M12 14V15" stroke="#393840" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M3 9V15" stroke="#393840" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M21 9V15" stroke="#393840" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
         </div>
-        <!-- DYNAMIC: longevity-note -->
         <p class="stat-note" data-dynamic="longevity-note">top 10% in the world</p>
       </div>
 
