@@ -105,18 +105,22 @@
     }
     .bubble {
       position: absolute;
-      width: 183%;           /* oversized to match Figma bleed */
+      width: clamp(620px, 108vw, 980px);
+      height: auto;
       max-width: none;       /* override base img { max-width: 100% } */
+      will-change: transform;
+      backface-visibility: hidden;
     }
     .bubble--tl {
-      left:  -35%;
-      top:   2%;
+      left:  -38%;
+      top:   1%;
       opacity: .9;
+      transform: translate3d(0, var(--bubble-tl-y, 0px), 0);
     }
     .bubble--br {
-      right: -35%;
-      bottom: 2%;
-      transform: scaleX(-1); /* mirror horizontally */
+      right: -38%;
+      bottom: 1%;
+      transform: scaleX(-1) translate3d(0, var(--bubble-br-y, 0px), 0); /* mirror + parallax */
       opacity: .9;
     }
 
@@ -706,25 +710,28 @@
       border: 1px solid rgba(67,149,199,0.14);
       border-radius: var(--r-cta);
       box-shadow: none;
-      padding: 24px 16px;
+      padding: 16px 14px 16px;
       display: flex;
       flex-direction: column;
       align-items: center;
+      gap: 10px;
       /* no overflow:hidden — allow shadow on app icon */
     }
 
     .cta-app-icon {
-      width:  60px;
-      height: 60px;
-      background: white;
-      border-radius: 15px;
-      box-shadow: var(--shadow-icon);
+      width: 100%;
+      height: auto;
       display: flex;
       align-items: center;
       justify-content: center;
-      overflow: hidden;
-      margin-bottom: 18px;
+      overflow: visible;
       flex-shrink: 0;
+    }
+    .cta-app-logo {
+      width: 60px;
+      height: 60px;
+      display: block;
+      object-fit: contain;
     }
 
     /* 18px spacer in Figma */
@@ -739,7 +746,7 @@
       text-transform: lowercase;
       width: 100%;
       text-align: left;
-      margin-bottom: 4px;
+      margin-bottom: 0;
     }
     .cta-desc {
       font-family: 'Poppins', sans-serif;
@@ -749,7 +756,7 @@
       line-height: 1.5;
       width: 100%;
       text-align: left;
-      margin-bottom: 18px;
+      margin-bottom: 0;
     }
 
     /* 18px spacer */
@@ -759,8 +766,8 @@
       width: 100%;
       display: flex;
       flex-direction: column;
-      gap: 16px;
-      margin-bottom: 18px;
+      gap: 12px;
+      margin-bottom: 2px;
     }
     .cta-feature {
       display: flex;
@@ -910,6 +917,179 @@
     .fixed-bar-btn:active { transform: scale(.97); opacity: .9; }
 
     /* ───────────────────────────────────────────────────────────────
+       TILE LOCK ICON (new design — no scores, just icon + lock)
+    ─────────────────────────────────────────────────────────────── */
+    .tile-lock {
+      width: 24px;
+      height: 24px;
+      flex-shrink: 0;
+      display: block;
+    }
+
+    /* ───────────────────────────────────────────────────────────────
+       GENDER CARD
+    ─────────────────────────────────────────────────────────────── */
+    .gender-card > .section-header { margin-bottom: 12px; }
+
+    .section-header {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .section-header .card-title { margin-bottom: 0; }
+    .info-icon {
+      width: 12px;
+      height: 12px;
+      flex-shrink: 0;
+      opacity: .55;
+    }
+
+    .gender-track {
+      position: relative;
+      height: 2px;
+      background: linear-gradient(to right,
+        rgb(104,209,197) 0%,
+        rgb(217,219,233) 51%,
+        rgb(53,107,101)  77.5%,
+        rgb(53,107,101)  100%);
+      border-radius: 2px;
+      margin-bottom: 8px;
+    }
+    .gender-dot {
+      position: absolute;
+      top: 50%;
+      left: 25.4%;
+      width: 10px;
+      height: 10px;
+      border-radius: 30px;
+      background: var(--primary);
+      border: 2px solid white;
+      transform: translate(-50%, -50%);
+      box-shadow: 0 1px 4px rgba(0,0,0,.15);
+    }
+    .gender-labels {
+      display: flex;
+      justify-content: space-between;
+      font-family: 'Poppins', sans-serif;
+      font-size: 10px;
+      font-weight: 400;
+      color: var(--t-dark);
+      line-height: 15px;
+    }
+
+    /* ───────────────────────────────────────────────────────────────
+       SEASONS CARD
+    ─────────────────────────────────────────────────────────────── */
+    .seasons-card { }
+    .seasons-card > .section-header { margin-bottom: 12px; }
+
+    .seasons-row {
+      display: flex;
+      justify-content: space-between;
+      gap: 4px;
+    }
+    .season-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0;
+      flex: 1;
+    }
+    .season-icon {
+      width: 48px;
+      height: 48px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+    .season-label {
+      font-family: 'Poppins', sans-serif;
+      font-size: 12px;
+      font-weight: 400;
+      color: var(--t-gray);
+      line-height: 16px;
+      margin-bottom: 4px;
+    }
+    .season-pct {
+      font-family: 'Krona One', sans-serif;
+      font-size: 20px;
+      line-height: 1.4;
+    }
+    .season-pct--dark   { color: var(--t-black); }
+    .season-pct--mid    { color: var(--t-gray); }
+    .season-pct--light  { color: rgb(217,219,233); }
+
+    /* ───────────────────────────────────────────────────────────────
+       NOSE TRAINER CARD
+    ─────────────────────────────────────────────────────────────── */
+    .nose-trainer-card {
+      background: var(--card);
+      border-radius: var(--r-card);
+      box-shadow: var(--shadow-card);
+      overflow: hidden;
+      position: relative;
+    }
+    .nose-trainer-inner {
+      display: flex;
+      align-items: stretch;
+      min-height: 148px;
+    }
+    .nose-trainer-text {
+      flex: 1;
+      padding: 20px 0 20px 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      min-width: 0;
+      justify-content: center;
+    }
+    .nose-trainer-title {
+      font-family: 'Poppins', sans-serif;
+      font-size: 18px;
+      font-weight: 600;
+      color: var(--t-black);
+      line-height: 1.2;
+    }
+    .nose-trainer-desc {
+      font-family: 'Poppins', sans-serif;
+      font-size: 12px;
+      color: var(--t-dark);
+      line-height: 1.5;
+    }
+    .nose-trainer-btn {
+      display: inline-flex;
+      align-items: center;
+      background: var(--primary);
+      color: white;
+      font-family: 'Poppins', sans-serif;
+      font-size: 12px;
+      font-weight: 500;
+      padding: 6px 16px;
+      border-radius: 24px;
+      border: none;
+      cursor: pointer;
+      align-self: flex-start;
+      white-space: nowrap;
+      transition: opacity .15s;
+    }
+    .nose-trainer-btn:active { opacity: .85; }
+    .nose-trainer-image {
+      width: 167px;
+      flex-shrink: 0;
+      overflow: hidden;
+      position: relative;
+      background: transparent;
+    }
+    .nose-trainer-image img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center top;
+      display: block;
+    }
+
+    /* ───────────────────────────────────────────────────────────────
        ANIMATIONS
     ─────────────────────────────────────────────────────────────── */
     @keyframes fadeUp {
@@ -936,7 +1116,13 @@
     ─────────────────────────────────────────────────────────────── */
     @media (min-width: 600px) {
       :root { --px: 24px; }
-
+      .cta-card {
+        padding: 18px 16px 18px;
+      }
+      .cta-app-logo {
+        width: 76px;
+        height: 76px;
+      }
       .store-btns {
         flex-direction: row;
         justify-content: center;
@@ -954,6 +1140,14 @@
       /* hide fixed bar on desktop */
       .fixed-bar { display: none; }
 
+      .cta-card {
+        padding: 24px 22px 22px;
+        gap: 14px;
+      }
+      .cta-app-logo {
+        width: 148px;
+        height: 148px;
+      }
       /* ── Hero: full-width photo block above description ── */
       .hero {
         display: block;
@@ -1006,11 +1200,11 @@
   ══════════════════════════════════════════════════════════════ -->
   <div class="bubbles-bg" aria-hidden="true">
     <img class="bubble bubble--tl"
-         src="https://www.figma.com/api/mcp/asset/f7761206-cda3-4bee-9e94-4308604cead3"
+         src="assets/Blue bubbles.svg"
          alt=""
          onerror="this.style.display='none'">
     <img class="bubble bubble--br"
-         src="https://www.figma.com/api/mcp/asset/b1e804af-d52c-4fac-ab72-81d8b6459437"
+         src="assets/Blue bubbles.svg"
          alt=""
          onerror="this.style.display='none'">
   </div>
@@ -1209,9 +1403,13 @@
                  src="https://www.figma.com/api/mcp/asset/a3f1152c-4539-4543-8271-9bb7946ca4d1"
                  alt=""
                  onerror="this.style.display='none'">
-            <!-- DYNAMIC: quality score -->
-            <span class="tile-num" data-dynamic="score-quality">8</span>
-            <span class="tile-denom">/10</span>
+            <svg class="tile-lock" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+              <path d="M17 10H7C6.44772 10 6 10.4477 6 11V18C6 18.5523 6.44772 19 7 19H17C17.5523 19 18 18.5523 18 18V11C18 10.4477 17.5523 10 17 10Z" stroke="#D9DBE9" stroke-width="2" stroke-linejoin="round"/>
+              <path d="M9 10V7C9 5.15905 10.3432 4 12 4C13.6568 4 15 5.15905 15 7V10" stroke="#D9DBE9" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              <path d="M12 14V15" stroke="#D9DBE9" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              <path d="M3 9V15" stroke="#D9DBE9" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              <path d="M21 9V15" stroke="#D9DBE9" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
           </div>
           <span class="tile-label">quality</span>
         </div>
@@ -1223,9 +1421,13 @@
                  src="https://www.figma.com/api/mcp/asset/a404bb0e-f610-4994-9b37-1a2235c748fe"
                  alt=""
                  onerror="this.style.display='none'">
-            <!-- DYNAMIC: appeal score -->
-            <span class="tile-num" data-dynamic="score-appeal">7</span>
-            <span class="tile-denom">/10</span>
+            <svg class="tile-lock" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+              <path d="M17 10H7C6.44772 10 6 10.4477 6 11V18C6 18.5523 6.44772 19 7 19H17C17.5523 19 18 18.5523 18 18V11C18 10.4477 17.5523 10 17 10Z" stroke="#D9DBE9" stroke-width="2" stroke-linejoin="round"/>
+              <path d="M9 10V7C9 5.15905 10.3432 4 12 4C13.6568 4 15 5.15905 15 7V10" stroke="#D9DBE9" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              <path d="M12 14V15" stroke="#D9DBE9" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              <path d="M3 9V15" stroke="#D9DBE9" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              <path d="M21 9V15" stroke="#D9DBE9" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
           </div>
           <span class="tile-label">appeal</span>
         </div>
@@ -1237,9 +1439,13 @@
                  src="https://www.figma.com/api/mcp/asset/ed923d5b-2c43-4a3f-8273-bb0403bdba8b"
                  alt=""
                  onerror="this.style.display='none'">
-            <!-- DYNAMIC: originality score -->
-            <span class="tile-num" data-dynamic="score-originality">6</span>
-            <span class="tile-denom">/10</span>
+            <svg class="tile-lock" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+              <path d="M17 10H7C6.44772 10 6 10.4477 6 11V18C6 18.5523 6.44772 19 7 19H17C17.5523 19 18 18.5523 18 18V11C18 10.4477 17.5523 10 17 10Z" stroke="#D9DBE9" stroke-width="2" stroke-linejoin="round"/>
+              <path d="M9 10V7C9 5.15905 10.3432 4 12 4C13.6568 4 15 5.15905 15 7V10" stroke="#D9DBE9" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              <path d="M12 14V15" stroke="#D9DBE9" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              <path d="M3 9V15" stroke="#D9DBE9" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              <path d="M21 9V15" stroke="#D9DBE9" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
           </div>
           <span class="tile-label">originality</span>
         </div>
@@ -1328,6 +1534,26 @@
     </div><!-- /scent card -->
 
 
+    <!-- ── GENDER CARD  (997:166) ────────────────────────────── -->
+    <div class="card gender-card" data-animate>
+      <div class="section-header">
+        <h2 class="card-title">gender</h2>
+        <svg class="info-icon" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <circle cx="6" cy="6" r="5.5" stroke="#393840"/>
+          <path d="M6 5.5v3M6 4h.005" stroke="#393840" stroke-width="1.2" stroke-linecap="round"/>
+        </svg>
+      </div>
+      <div class="gender-track">
+        <div class="gender-dot" data-dynamic="gender-dot"></div>
+      </div>
+      <div class="gender-labels">
+        <span>feminine</span>
+        <span>unisex</span>
+        <span>masculine</span>
+      </div>
+    </div><!-- /gender card -->
+
+
     <!-- ── STATS PAIR  (980:1753) ─────────────────────────────── -->
     <!-- Both Projection and Longevity are locked/blurred per Figma -->
     <div class="stats-pair" data-animate>
@@ -1335,14 +1561,11 @@
       <!-- Projection -->
       <div class="stat-card">
         <h3 class="stat-title">Projection</h3>
-        <div class="stat-lock-icon">
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M17 10H7C6.44772 10 6 10.4477 6 11V18C6 18.5523 6.44772 19 7 19H17C17.5523 19 18 18.5523 18 18V11C18 10.4477 17.5523 10 17 10Z" stroke="#393840" stroke-width="2" stroke-linejoin="round"/>
-            <path d="M9 10V7C9 5.15905 10.3432 4 12 4C13.6568 4 15 5.15905 15 7V10" stroke="#393840" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-            <path d="M12 14V15" stroke="#393840" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-            <path d="M3 9V15" stroke="#393840" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-            <path d="M21 9V15" stroke="#393840" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-          </svg>
+        <div class="stat-num-row">
+          <span class="stat-num" data-dynamic="score-projection">5</span>
+          <div>
+            <span class="stat-denom">/10</span>
+          </div>
         </div>
         <p class="stat-note" data-dynamic="projection-note">top 90% in the world</p>
       </div>
@@ -1350,14 +1573,11 @@
       <!-- Longevity -->
       <div class="stat-card">
         <h3 class="stat-title">Longevity</h3>
-        <div class="stat-lock-icon">
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M17 10H7C6.44772 10 6 10.4477 6 11V18C6 18.5523 6.44772 19 7 19H17C17.5523 19 18 18.5523 18 18V11C18 10.4477 17.5523 10 17 10Z" stroke="#393840" stroke-width="2" stroke-linejoin="round"/>
-            <path d="M9 10V7C9 5.15905 10.3432 4 12 4C13.6568 4 15 5.15905 15 7V10" stroke="#393840" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-            <path d="M12 14V15" stroke="#393840" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-            <path d="M3 9V15" stroke="#393840" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-            <path d="M21 9V15" stroke="#393840" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-          </svg>
+        <div class="stat-num-row">
+          <span class="stat-num" data-dynamic="score-longevity">5</span>
+          <div>
+            <span class="stat-denom">/10</span>
+          </div>
         </div>
         <p class="stat-note" data-dynamic="longevity-note">top 10% in the world</p>
       </div>
@@ -1437,41 +1657,81 @@
     </div><!-- /notes card -->
 
 
+    <!-- ── SEASONS CARD  (997:178) ───────────────────────────── -->
+    <div class="card seasons-card" data-animate>
+      <div class="section-header">
+        <h2 class="card-title">seasons</h2>
+        <svg class="info-icon" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <circle cx="6" cy="6" r="5.5" stroke="#393840"/>
+          <path d="M6 5.5v3M6 4h.005" stroke="#393840" stroke-width="1.2" stroke-linecap="round"/>
+        </svg>
+      </div>
+      <div class="seasons-row">
+
+        <!-- Spring -->
+        <div class="season-item">
+          <div class="season-icon">
+            <svg width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+              <path fill-rule="evenodd" clip-rule="evenodd" d="M10 14.8515C10.2065 17.7611 11.2166 20.5562 12.918 22.9255C13.4726 23.6284 14.138 24.2364 14.888 24.7255C15.6535 25.1625 16.4872 25.4674 17.354 25.6275C20.1317 25.9973 22.9562 25.5176 25.456 24.2515C25.2516 21.3393 24.242 18.5413 22.54 16.1695C21.9854 15.4666 21.32 14.8586 20.57 14.3695C19.8041 13.9346 18.9705 13.6317 18.104 13.4735C15.3255 13.1039 12.5002 13.5843 10 14.8515Z" stroke="#A0A3BD" stroke-linecap="round" stroke-linejoin="round"/>
+              <path d="M25.958 9.75159C25.958 9.47545 25.7342 9.25159 25.458 9.25159C25.1819 9.25159 24.958 9.47545 24.958 9.75159H25.458H25.958ZM24.958 17.9116C24.958 18.1877 25.1819 18.4116 25.458 18.4116C25.7342 18.4116 25.958 18.1877 25.958 17.9116H25.458H24.958ZM24.958 40.0276C24.958 40.3037 25.1819 40.5276 25.458 40.5276C25.7342 40.5276 25.958 40.3037 25.958 40.0276H25.458H24.958ZM25.958 17.9116C25.958 17.6354 25.7342 17.4116 25.458 17.4116C25.1819 17.4116 24.958 17.6354 24.958 17.9116H25.458H25.958ZM25.5204 20.8295C25.2464 20.795 24.9964 20.9892 24.9619 21.2632C24.9275 21.5372 25.1216 21.7872 25.3956 21.8217L25.458 21.3256L25.5204 20.8295ZM33.12 20.0276L33.3423 20.4754C33.3476 20.4728 33.3529 20.4701 33.3582 20.4672L33.12 20.0276ZM35.216 18.4556L35.5714 18.8073C35.5774 18.8012 35.5833 18.795 35.589 18.7885L35.216 18.4556ZM36.698 16.2276L37.1493 16.4429C37.1516 16.4381 37.1538 16.4332 37.1559 16.4283L36.698 16.2276ZM37.928 8.10359L38.4248 8.04742C38.3989 7.81791 38.2191 7.63604 37.9899 7.60744L37.928 8.10359ZM30.266 9.40959L30.0432 8.96197C30.0381 8.96454 30.0329 8.9672 30.0279 8.96995L30.266 9.40959ZM28.17 10.9816L27.8146 10.6299C27.8087 10.6359 27.8029 10.642 27.7973 10.6483L28.17 10.9816ZM26.688 13.2036L26.237 12.9876L26.2347 12.9926L26.688 13.2036ZM24.9614 17.8743C24.9408 18.1497 25.1474 18.3896 25.4227 18.4102C25.6981 18.4308 25.938 18.2242 25.9586 17.9489L25.46 17.9116L24.9614 17.8743ZM25.458 9.75159H24.958V17.9116H25.458H25.958V9.75159H25.458ZM25.458 40.0276H25.958V17.9116H25.458H24.958V40.0276H25.458ZM25.458 21.3256L25.3956 21.8217C28.1193 22.1643 30.8835 21.696 33.3423 20.4754L33.12 20.0276L32.8977 19.5797C30.615 20.7128 28.0489 21.1475 25.5204 20.8295L25.458 21.3256ZM33.12 20.0276L33.3582 20.4672C34.1734 20.0256 34.9192 19.4663 35.5714 18.8073L35.216 18.4556L34.8606 18.1039C34.2775 18.6931 33.6108 19.1931 32.8819 19.5879L33.12 20.0276ZM35.216 18.4556L35.589 18.7885C36.2175 18.0845 36.7428 17.2947 37.1493 16.4429L36.698 16.2276L36.2467 16.0123C35.8811 16.7786 35.4084 17.4892 34.843 18.1226L35.216 18.4556ZM36.698 16.2276L37.1559 16.4283C38.31 13.7953 38.7478 10.9041 38.4248 8.04742L37.928 8.10359L37.4312 8.15976C37.7343 10.8413 37.3234 13.5553 36.2401 16.0269L36.698 16.2276ZM37.928 8.10359L37.9899 7.60744C35.2655 7.26743 32.5012 7.7386 30.0432 8.96197L30.266 9.40959L30.4888 9.85721C32.7707 8.7215 35.3368 8.28409 37.8661 8.59974L37.928 8.10359ZM30.266 9.40959L30.0279 8.96995C29.2126 9.41156 28.4669 9.97087 27.8146 10.6299L28.17 10.9816L28.5254 11.3333C29.1085 10.7441 29.7753 10.2441 30.5042 9.84923L30.266 9.40959ZM28.17 10.9816L27.7973 10.6483C27.1693 11.3504 26.644 12.138 26.2371 12.9876L26.688 13.2036L27.1389 13.4196C27.5051 12.6552 27.9777 11.9466 28.5427 11.3149L28.17 10.9816ZM26.688 13.2036L26.2347 12.9926C25.5192 14.5296 25.0878 16.1836 24.9614 17.8743L25.46 17.9116L25.9586 17.9489C26.076 16.3785 26.4767 14.8423 27.1413 13.4146L26.688 13.2036Z" fill="#A0A3BD"/>
+            </svg>
+          </div>
+          <span class="season-label">Spring</span>
+          <span class="season-pct season-pct--mid" data-dynamic="season-spring">70%</span>
+        </div>
+
+        <!-- Summer -->
+        <div class="season-item">
+          <div class="season-icon">
+            <svg width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+<path fill-rule="evenodd" clip-rule="evenodd" d="M29.25 24C29.25 26.8995 26.8995 29.25 24 29.25C21.1005 29.25 18.75 26.8995 18.75 24C18.75 21.1005 21.1005 18.75 24 18.75C26.8995 18.75 29.25 21.1005 29.25 24Z" stroke="black" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M38 24.5C38.2761 24.5 38.5 24.2761 38.5 24C38.5 23.7239 38.2761 23.5 38 23.5V24V24.5ZM34.5 23.5C34.2239 23.5 34 23.7239 34 24C34 24.2761 34.2239 24.5 34.5 24.5V24V23.5ZM13.5 24.5C13.7761 24.5 14 24.2761 14 24C14 23.7239 13.7761 23.5 13.5 23.5V24V24.5ZM10 23.5C9.72386 23.5 9.5 23.7239 9.5 24C9.5 24.2761 9.72386 24.5 10 24.5V24V23.5ZM24.5 10C24.5 9.72386 24.2761 9.5 24 9.5C23.7239 9.5 23.5 9.72386 23.5 10H24H24.5ZM23.5 13.5C23.5 13.7761 23.7239 14 24 14C24.2761 14 24.5 13.7761 24.5 13.5H24H23.5ZM24.5 34.5C24.5 34.2239 24.2761 34 24 34C23.7239 34 23.5 34.2239 23.5 34.5H24H24.5ZM23.5 38C23.5 38.2761 23.7239 38.5 24 38.5C24.2761 38.5 24.5 38.2761 24.5 38H24H23.5ZM34.2536 14.4536C34.4488 14.2583 34.4488 13.9417 34.2536 13.7464C34.0583 13.5512 33.7417 13.5512 33.5464 13.7464L33.9 14.1L34.2536 14.4536ZM31.0704 16.2224C30.8752 16.4177 30.8752 16.7343 31.0704 16.9296C31.2657 17.1248 31.5823 17.1248 31.7776 16.9296L31.424 16.576L31.0704 16.2224ZM16.9296 31.7776C17.1248 31.5823 17.1248 31.2657 16.9296 31.0704C16.7343 30.8752 16.4177 30.8752 16.2224 31.0704L16.576 31.424L16.9296 31.7776ZM13.7464 33.5464C13.5512 33.7417 13.5512 34.0583 13.7464 34.2536C13.9417 34.4488 14.2583 34.4488 14.4536 34.2536L14.1 33.9L13.7464 33.5464ZM14.4536 13.7464C14.2583 13.5512 13.9417 13.5512 13.7464 13.7464C13.5512 13.9417 13.5512 14.2583 13.7464 14.4536L14.1 14.1L14.4536 13.7464ZM16.2224 16.9296C16.4177 17.1248 16.7343 17.1248 16.9296 16.9296C17.1248 16.7343 17.1248 16.4177 16.9296 16.2224L16.576 16.576L16.2224 16.9296ZM31.7796 31.0724C31.5843 30.8772 31.2677 30.8772 31.0724 31.0724C30.8772 31.2677 30.8772 31.5843 31.0724 31.7796L31.426 31.426L31.7796 31.0724ZM33.5464 34.2536C33.7417 34.4488 34.0583 34.4488 34.2536 34.2536C34.4488 34.0583 34.4488 33.7417 34.2536 33.5464L33.9 33.9L33.5464 34.2536ZM38 24V23.5H34.5V24V24.5H38V24ZM13.5 24V23.5H10V24V24.5H13.5V24ZM24 10H23.5V13.5H24H24.5V10H24ZM24 34.5H23.5V38H24H24.5V34.5H24ZM33.9 14.1L33.5464 13.7464L31.0704 16.2224L31.424 16.576L31.7776 16.9296L34.2536 14.4536L33.9 14.1ZM16.576 31.424L16.2224 31.0704L13.7464 33.5464L14.1 33.9L14.4536 34.2536L16.9296 31.7776L16.576 31.424ZM14.1 14.1L13.7464 14.4536L16.2224 16.9296L16.576 16.576L16.9296 16.2224L14.4536 13.7464L14.1 14.1ZM31.426 31.426L31.0724 31.7796L33.5464 34.2536L33.9 33.9L34.2536 33.5464L31.7796 31.0724L31.426 31.426Z" fill="black"/>
+            </svg>
+          </div>
+          <span class="season-label" style="color:var(--t-dark)">Summer</span>
+          <span class="season-pct season-pct--dark" data-dynamic="season-summer">90%</span>
+        </div>
+
+        <!-- Autumn -->
+        <div class="season-item">
+          <div class="season-icon">
+            <svg width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+<path fill-rule="evenodd" clip-rule="evenodd" d="M34.182 16.4219C34.0134 12.7206 30.8839 9.85226 27.182 10.0059C24.4941 9.95603 22.0117 11.4392 20.782 13.8299C20.1829 13.6143 19.5508 13.5047 18.914 13.5059C16.2196 13.3907 13.9401 15.4778 13.818 18.1719C13.818 18.2212 13.818 18.2699 13.818 18.3179C11.6495 18.7554 10.0678 20.6287 10 22.8399C10.1222 25.5316 12.3979 27.6177 15.09 27.5059H32.908C35.6009 27.6189 37.8779 25.5324 38 22.8399C37.9175 20.5203 36.1871 18.5921 33.89 18.2599C34.0836 17.6664 34.1821 17.0461 34.182 16.4219Z" stroke="#A0A3BD" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M17.4851 31.1271C17.552 30.8592 17.3892 30.5878 17.1213 30.5208C16.8534 30.4538 16.5819 30.6167 16.5149 30.8846L17 31.0059L17.4851 31.1271ZM14.7649 37.8846C14.698 38.1525 14.8608 38.424 15.1287 38.4909C15.3966 38.5579 15.6681 38.395 15.7351 38.1271L15.25 38.0059L14.7649 37.8846ZM22.7243 31.164C22.8117 30.902 22.6701 30.6188 22.4081 30.5315C22.1461 30.4442 21.863 30.5858 21.7757 30.8477L22.25 31.0059L22.7243 31.164ZM20.0257 36.0977C19.9383 36.3597 20.0799 36.6429 20.3419 36.7302C20.6039 36.8175 20.887 36.6759 20.9743 36.414L20.5 36.2559L20.0257 36.0977ZM27.9851 31.1271C28.052 30.8592 27.8892 30.5878 27.6213 30.5208C27.3534 30.4538 27.0819 30.6167 27.0149 30.8846L27.5 31.0059L27.9851 31.1271ZM25.2649 37.8846C25.198 38.1525 25.3608 38.424 25.6287 38.4909C25.8966 38.5579 26.1681 38.395 26.2351 38.1271L25.75 38.0059L25.2649 37.8846ZM33.2243 31.164C33.3117 30.902 33.1701 30.6188 32.9081 30.5315C32.6461 30.4442 32.363 30.5858 32.2757 30.8477L32.75 31.0059L33.2243 31.164ZM30.5257 36.0977C30.4383 36.3597 30.5799 36.6429 30.8419 36.7302C31.1039 36.8175 31.387 36.6759 31.4743 36.414L31 36.2559L30.5257 36.0977ZM17 31.0059L16.5149 30.8846L14.7649 37.8846L15.25 38.0059L15.7351 38.1271L17.4851 31.1271L17 31.0059ZM22.25 31.0059L21.7757 30.8477L20.0257 36.0977L20.5 36.2559L20.9743 36.414L22.7243 31.164L22.25 31.0059ZM27.5 31.0059L27.0149 30.8846L25.2649 37.8846L25.75 38.0059L26.2351 38.1271L27.9851 31.1271L27.5 31.0059ZM32.75 31.0059L32.2757 30.8477L30.5257 36.0977L31 36.2559L31.4743 36.414L33.2243 31.164L32.75 31.0059Z" fill="#A0A3BD"/>
+            </svg>
+          </div>
+          <span class="season-label">Autumn</span>
+          <span class="season-pct season-pct--mid" data-dynamic="season-autumn">49%</span>
+        </div>
+
+        <!-- Winter -->
+        <div class="season-item">
+          <div class="season-icon">
+            <svg width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+<path d="M28.3524 12.392C28.5689 12.2206 28.6054 11.9061 28.434 11.6896C28.2626 11.4731 27.9481 11.4366 27.7316 11.608L28.042 12L28.3524 12.392ZM23.6896 14.808C23.4731 14.9794 23.4366 15.2939 23.608 15.5104C23.7794 15.7269 24.0939 15.7634 24.3104 15.592L24 15.2L23.6896 14.808ZM23.6896 15.592C23.9061 15.7634 24.2206 15.7269 24.392 15.5104C24.5634 15.2939 24.5269 14.9794 24.3104 14.808L24 15.2L23.6896 15.592ZM20.2684 11.608C20.0519 11.4366 19.7374 11.4731 19.566 11.6896C19.3946 11.9061 19.4311 12.2206 19.6476 12.392L19.958 12L20.2684 11.608ZM23.5 15.2C23.5 15.4761 23.7239 15.7 24 15.7C24.2761 15.7 24.5 15.4761 24.5 15.2H24H23.5ZM24.5 8C24.5 7.72386 24.2761 7.5 24 7.5C23.7239 7.5 23.5 7.72386 23.5 8H24H24.5ZM24.5 15.2C24.5 14.9239 24.2761 14.7 24 14.7C23.7239 14.7 23.5 14.9239 23.5 15.2H24H24.5ZM23.5 32.8C23.5 33.0761 23.7239 33.3 24 33.3C24.2761 33.3 24.5 33.0761 24.5 32.8H24H23.5ZM19.6476 35.608C19.4311 35.7794 19.3946 36.0938 19.566 36.3104C19.7374 36.5269 20.0519 36.5634 20.2684 36.392L19.958 36L19.6476 35.608ZM24.3104 33.192C24.5269 33.0206 24.5634 32.7061 24.392 32.4896C24.2206 32.2731 23.9061 32.2366 23.6896 32.408L24 32.8L24.3104 33.192ZM24.3104 32.408C24.0939 32.2366 23.7794 32.2731 23.608 32.4896C23.4366 32.7061 23.4731 33.0206 23.6896 33.192L24 32.8L24.3104 32.408ZM27.7316 36.392C27.9481 36.5634 28.2626 36.5269 28.434 36.3104C28.6054 36.0938 28.5689 35.7794 28.3524 35.608L28.042 36L27.7316 36.392ZM24.5 32.8C24.5 32.5239 24.2761 32.3 24 32.3C23.7239 32.3 23.5 32.5239 23.5 32.8H24H24.5ZM23.5 40C23.5 40.2761 23.7239 40.5 24 40.5C24.2761 40.5 24.5 40.2761 24.5 40H24H23.5ZM11.6603 26.0697C11.4028 25.9701 11.1133 26.0981 11.0137 26.3557C10.9141 26.6132 11.0421 26.9027 11.2997 27.0023L11.48 26.536L11.6603 26.0697ZM16.1197 28.8663C16.3772 28.9659 16.6667 28.8379 16.7663 28.5803C16.8659 28.3228 16.7379 28.0333 16.4803 27.9337L16.3 28.4L16.1197 28.8663ZM16.7942 28.4761C16.8362 28.2032 16.649 27.9479 16.3761 27.9058C16.1032 27.8638 15.8479 28.051 15.8058 28.3239L16.3 28.4L16.7942 28.4761ZM15.0258 33.3879C14.9838 33.6608 15.171 33.9161 15.4439 33.9582C15.7168 34.0002 15.9721 33.813 16.0142 33.5401L15.52 33.464L15.0258 33.3879ZM16.5481 28.8341C16.7878 28.6971 16.8711 28.3917 16.7341 28.1519C16.5971 27.9122 16.2917 27.8289 16.0519 27.9659L16.3 28.4L16.5481 28.8341ZM9.75193 31.5659C9.51217 31.7029 9.42887 32.0083 9.56588 32.2481C9.70288 32.4878 10.0083 32.5711 10.2481 32.4341L10 32L9.75193 31.5659ZM16.0519 27.9659C15.8122 28.1029 15.7289 28.4083 15.8659 28.6481C16.0029 28.8878 16.3083 28.9711 16.5481 28.8341L16.3 28.4L16.0519 27.9659ZM31.9481 20.0341C32.1878 19.8971 32.2711 19.5917 32.1341 19.3519C31.9971 19.1122 31.6917 19.0289 31.4519 19.1659L31.7 19.6L31.9481 20.0341ZM36.3397 21.9303C36.5972 22.0299 36.8867 21.9019 36.9863 21.6443C37.0859 21.3868 36.9579 21.0973 36.7003 20.9977L36.52 21.464L36.3397 21.9303ZM31.8803 19.1337C31.6228 19.0341 31.3333 19.1621 31.2337 19.4197C31.1341 19.6772 31.2621 19.9667 31.5197 20.0663L31.7 19.6L31.8803 19.1337ZM31.2058 19.5239C31.1638 19.7968 31.351 20.0521 31.6239 20.0942C31.8968 20.1362 32.1521 19.949 32.1942 19.6761L31.7 19.6L31.2058 19.5239ZM32.9742 14.6121C33.0162 14.3392 32.829 14.0839 32.5561 14.0418C32.2832 13.9998 32.0279 14.187 31.9858 14.4599L32.48 14.536L32.9742 14.6121ZM31.4519 19.1659C31.2122 19.3029 31.1289 19.6083 31.2659 19.8481C31.4029 20.0878 31.7083 20.1711 31.9481 20.0341L31.7 19.6L31.4519 19.1659ZM38.2481 16.4341C38.4878 16.2971 38.5711 15.9917 38.4341 15.7519C38.2971 15.5122 37.9917 15.4289 37.7519 15.5659L38 16L38.2481 16.4341ZM11.2997 20.9977C11.0421 21.0973 10.9141 21.3868 11.0137 21.6443C11.1133 21.9019 11.4028 22.0299 11.6603 21.9303L11.48 21.464L11.2997 20.9977ZM16.4803 20.0663C16.7379 19.9667 16.8659 19.6772 16.7663 19.4197C16.6667 19.1621 16.3772 19.0341 16.1197 19.1337L16.3 19.6L16.4803 20.0663ZM15.8058 19.6761C15.8479 19.949 16.1032 20.1362 16.3761 20.0942C16.649 20.0521 16.8362 19.7968 16.7942 19.5239L16.3 19.6L15.8058 19.6761ZM16.0142 14.4599C15.9721 14.187 15.7168 13.9998 15.4439 14.0418C15.171 14.0839 14.9838 14.3392 15.0258 14.6121L15.52 14.536L16.0142 14.4599ZM16.0519 20.0341C16.2917 20.1711 16.5971 20.0878 16.7341 19.8481C16.8711 19.6083 16.7878 19.3029 16.5481 19.1659L16.3 19.6L16.0519 20.0341ZM10.2481 15.5659C10.0083 15.4289 9.70288 15.5122 9.56588 15.7519C9.42887 15.9917 9.51217 16.2971 9.75193 16.4341L10 16L10.2481 15.5659ZM16.5481 19.1659C16.3083 19.0289 16.0029 19.1122 15.8659 19.3519C15.7289 19.5917 15.8122 19.8971 16.0519 20.0341L16.3 19.6L16.5481 19.1659ZM31.4519 28.8341C31.6917 28.9711 31.9971 28.8878 32.1341 28.6481C32.2711 28.4083 32.1878 28.1029 31.9481 27.9659L31.7 28.4L31.4519 28.8341ZM36.7003 27.0023C36.9579 26.9027 37.0859 26.6132 36.9863 26.3557C36.8867 26.0981 36.5972 25.9701 36.3397 26.0697L36.52 26.536L36.7003 27.0023ZM31.5197 27.9337C31.2621 28.0333 31.1341 28.3228 31.2337 28.5803C31.3333 28.8379 31.6228 28.9659 31.8803 28.8663L31.7 28.4L31.5197 27.9337ZM32.1942 28.3239C32.1521 28.051 31.8968 27.8638 31.6239 27.9058C31.351 27.9479 31.1638 28.2032 31.2058 28.4761L31.7 28.4L32.1942 28.3239ZM31.9858 33.5401C32.0279 33.813 32.2832 34.0002 32.5561 33.9582C32.829 33.9161 33.0162 33.6608 32.9742 33.3879L32.48 33.464L31.9858 33.5401ZM31.9481 27.9659C31.7083 27.8289 31.4029 27.9122 31.2659 28.1519C31.1289 28.3917 31.2122 28.6971 31.4519 28.8341L31.7 28.4L31.9481 27.9659ZM37.7519 32.4341C37.9917 32.5711 38.2971 32.4878 38.4341 32.2481C38.5711 32.0083 38.4878 31.7029 38.2481 31.5659L38 32L37.7519 32.4341ZM28.042 12L27.7316 11.608L23.6896 14.808L24 15.2L24.3104 15.592L28.3524 12.392L28.042 12ZM24 15.2L24.3104 14.808L20.2684 11.608L19.958 12L19.6476 12.392L23.6896 15.592L24 15.2ZM24 15.2H24.5V8H24H23.5V15.2H24ZM24 15.2H23.5V32.8H24H24.5V15.2H24ZM19.958 36L20.2684 36.392L24.3104 33.192L24 32.8L23.6896 32.408L19.6476 35.608L19.958 36ZM24 32.8L23.6896 33.192L27.7316 36.392L28.042 36L28.3524 35.608L24.3104 32.408L24 32.8ZM24 32.8H23.5V40H24H24.5V32.8H24ZM11.48 26.536L11.2997 27.0023L16.1197 28.8663L16.3 28.4L16.4803 27.9337L11.6603 26.0697L11.48 26.536ZM16.3 28.4L15.8058 28.3239L15.0258 33.3879L15.52 33.464L16.0142 33.5401L16.7942 28.4761L16.3 28.4ZM16.3 28.4L16.0519 27.9659L9.75193 31.5659L10 32L10.2481 32.4341L16.5481 28.8341L16.3 28.4ZM16.3 28.4L16.5481 28.8341L31.9481 20.0341L31.7 19.6L31.4519 19.1659L16.0519 27.9659L16.3 28.4ZM36.52 21.464L36.7003 20.9977L31.8803 19.1337L31.7 19.6L31.5197 20.0663L36.3397 21.9303L36.52 21.464ZM31.7 19.6L32.1942 19.6761L32.9742 14.6121L32.48 14.536L31.9858 14.4599L31.2058 19.5239L31.7 19.6ZM31.7 19.6L31.9481 20.0341L38.2481 16.4341L38 16L37.7519 15.5659L31.4519 19.1659L31.7 19.6ZM11.48 21.464L11.6603 21.9303L16.4803 20.0663L16.3 19.6L16.1197 19.1337L11.2997 20.9977L11.48 21.464ZM16.3 19.6L16.7942 19.5239L16.0142 14.4599L15.52 14.536L15.0258 14.6121L15.8058 19.6761L16.3 19.6ZM16.3 19.6L16.5481 19.1659L10.2481 15.5659L10 16L9.75193 16.4341L16.0519 20.0341L16.3 19.6ZM16.3 19.6L16.0519 20.0341L31.4519 28.8341L31.7 28.4L31.9481 27.9659L16.5481 19.1659L16.3 19.6ZM36.52 26.536L36.3397 26.0697L31.5197 27.9337L31.7 28.4L31.8803 28.8663L36.7003 27.0023L36.52 26.536ZM31.7 28.4L31.2058 28.4761L31.9858 33.5401L32.48 33.464L32.9742 33.3879L32.1942 28.3239L31.7 28.4ZM31.7 28.4L31.4519 28.8341L37.7519 32.4341L38 32L38.2481 31.5659L31.9481 27.9659L31.7 28.4Z" fill="#D9DBE9"/>
+            </svg>
+          </div>
+          <span class="season-label" style="color:rgb(217,219,233)">Winter</span>
+          <span class="season-pct season-pct--light" data-dynamic="season-winter">10%</span>
+        </div>
+
+      </div>
+    </div><!-- /seasons card -->
+
+
     <!-- ── APP CTA CARD  (993:10110) ──────────────────────────── -->
     <div class="cta-card" id="cta-card" data-animate>
 
-      <!-- App icon (Scented logo SVG inside white rounded square) -->
+      <!-- App logo -->
       <div class="cta-app-icon">
-        <svg width="38" height="49" viewBox="28 0 192 256" fill="none" xmlns="http://www.w3.org/2000/svg" aria-label="Scented app icon">
-          <defs>
-            <linearGradient id="cta-g" x1="8" y1="227" x2="240" y2="26" gradientUnits="userSpaceOnUse">
-              <stop stop-color="#4395C7"/>
-              <stop offset="1" stop-color="#89E8C9"/>
-            </linearGradient>
-          </defs>
-          <!-- Left arc -->
-          <mask id="cta-m0" style="mask-type:luminance" maskUnits="userSpaceOnUse" x="30" y="67" width="119" height="187">
-            <path d="M140.942 212.05C131.454 202.562 116.074 202.562 106.586 212.05C97.0982 221.538 81.7184 221.538 72.2303 212.05L72.213 212.067C62.7422 202.579 62.7465 187.208 72.2303 177.728L72.213 177.711C81.7184 168.205 81.7184 152.826 72.2303 143.338C62.7422 133.849 62.7422 118.47 72.2303 108.981L72.1957 108.947C81.6838 99.4588 81.6838 84.0789 72.1957 74.5908C62.7076 65.1027 47.3278 65.1027 37.8397 74.5908C28.3516 84.0789 28.3516 99.4588 37.8397 108.947C47.3278 118.435 47.3278 133.815 37.8397 143.303L37.857 143.32C28.3516 152.826 28.3516 168.205 37.8397 177.694C47.3278 187.182 47.3278 202.562 37.8397 212.05L37.857 212.067C28.3516 221.572 28.3516 236.952 37.8397 246.44C42.5859 251.187 48.8104 253.56 55.035 253.555C61.2595 253.56 67.4841 251.191 72.2303 246.44C81.8827 236.961 97.1242 237.008 106.552 246.436L106.586 246.401C116.074 255.89 131.454 255.89 140.942 246.401C150.431 236.913 150.431 221.533 140.942 212.045Z" fill="white"/>
-          </mask>
-          <g mask="url(#cta-m0)"><rect x="28" y="0" width="192" height="256" fill="url(#cta-g)"/></g>
-          <!-- Right arc -->
-          <mask id="cta-m1" style="mask-type:luminance" maskUnits="userSpaceOnUse" x="99" y="67" width="118" height="187">
-            <path d="M209.685 143.337C200.197 133.849 200.197 118.47 209.685 108.981L209.672 108.968C219.173 99.4674 219.173 84.0875 209.685 74.5994C206.711 71.6255 203.162 69.5852 199.393 68.4786C191.128 66.032 181.817 68.068 175.294 74.5908C165.599 84.0746 150.387 84.0141 140.973 74.5994L140.938 74.634C131.45 65.1459 116.07 65.1459 106.582 74.634C97.094 84.1221 97.094 99.5019 106.582 108.99C116.07 118.478 131.45 118.478 140.938 108.99C150.426 99.5019 165.806 99.5019 175.294 108.99L175.316 108.968C184.782 118.457 184.778 133.823 175.294 143.303L175.312 143.32C165.806 152.826 165.806 168.205 175.294 177.694C184.782 187.182 184.782 202.561 175.294 212.05L175.329 212.084C165.841 221.572 165.841 236.952 175.329 246.44C184.817 255.928 200.197 255.928 209.685 246.44C219.173 236.952 219.173 221.572 209.685 212.084C200.197 202.596 200.197 187.216 209.685 177.728L209.668 177.711C219.173 168.205 219.173 152.826 209.685 143.337Z" fill="white"/>
-          </mask>
-          <g mask="url(#cta-m1)"><rect x="28" y="0" width="192" height="256" fill="url(#cta-g)"/></g>
-          <!-- Top dot -->
-          <mask id="cta-m2" style="mask-type:luminance" maskUnits="userSpaceOnUse" x="99" y="0" width="50" height="49">
-            <path d="M123.756 48.5861C137.172 48.5861 148.049 37.7097 148.049 24.293C148.049 10.8764 137.172 0 123.756 0C110.339 0 99.4626 10.8764 99.4626 24.293C99.4626 37.7097 110.339 48.5861 123.756 48.5861Z" fill="white"/>
-          </mask>
-          <g mask="url(#cta-m2)"><rect x="28" y="0" width="192" height="256" fill="url(#cta-g)"/></g>
-        </svg>
+        <img class="cta-app-logo" src="assets/logo black.svg" alt="Scented logo">
       </div>
 
       <!-- Heading + description -->
-      <h2 class="cta-title">see the full picture</h2>
+      <h2 class="cta-title">your personal ai scent mentor</h2>
       <p class="cta-desc">
-        Get Scented.ai app to unlock the complete analysis for this fragrance and discover
-        thousands more.
+        Scented.ai learns what you love and guides you beyond it — helping you refine your
+        taste and find fragrances that truly feel like you.
       </p>
 
       <!-- Check-feature list -->
@@ -1483,7 +1743,7 @@
               alt="✓"
               onerror="this.outerHTML='<svg width=\'14\' height=\'10\' viewBox=\'0 0 14 10\' fill=\'none\'><path d=\'M1 5l4 4L13 1\' stroke=\'#569ea1\' stroke-width=\'2\' stroke-linecap=\'round\' stroke-linejoin=\'round\'/></svg>'">
           </div>
-          <span class="cta-feature-text">Full scent profile &amp; all notes</span>
+          <span class="cta-feature-text">Understand your scent identity</span>
         </li>
         <li class="cta-feature">
           <div class="check-icon">
@@ -1492,7 +1752,7 @@
               alt="✓"
               onerror="this.outerHTML='<svg width=\'14\' height=\'10\' viewBox=\'0 0 14 10\' fill=\'none\'><path d=\'M1 5l4 4L13 1\' stroke=\'#569ea1\' stroke-width=\'2\' stroke-linecap=\'round\' stroke-linejoin=\'round\'/></svg>'">
           </div>
-          <span class="cta-feature-text">Projection, longevity &amp; season guide</span>
+          <span class="cta-feature-text">Discover deeper, more refined scents</span>
         </li>
         <li class="cta-feature">
           <div class="check-icon">
@@ -1501,7 +1761,16 @@
               alt="✓"
               onerror="this.outerHTML='<svg width=\'14\' height=\'10\' viewBox=\'0 0 14 10\' fill=\'none\'><path d=\'M1 5l4 4L13 1\' stroke=\'#569ea1\' stroke-width=\'2\' stroke-linecap=\'round\' stroke-linejoin=\'round\'/></svg>'">
           </div>
-          <span class="cta-feature-text">Similar fragrances you'll love</span>
+          <span class="cta-feature-text">Go beyond obvious notes</span>
+        </li>
+        <li class="cta-feature">
+          <div class="check-icon">
+            <img
+              src="https://www.figma.com/api/mcp/asset/7cfea25d-8e66-413c-8c14-a4b77fdf581f"
+              alt="✓"
+              onerror="this.outerHTML='<svg width=\'14\' height=\'10\' viewBox=\'0 0 14 10\' fill=\'none\'><path d=\'M1 5l4 4L13 1\' stroke=\'#569ea1\' stroke-width=\'2\' stroke-linecap=\'round\' stroke-linejoin=\'round\'/></svg>'">
+          </div>
+          <span class="cta-feature-text">Build your personal fragrance taste</span>
         </li>
       </ul>
 
@@ -1591,6 +1860,26 @@
       </div><!-- /store-btns -->
 
     </div><!-- /cta card -->
+
+
+    <!-- ── NOSE TRAINER  (997:520) ───────────────────────────── -->
+    <div class="nose-trainer-card" data-animate>
+      <div class="nose-trainer-inner">
+        <div class="nose-trainer-text">
+          <p class="nose-trainer-title">Nose trainer</p>
+          <p class="nose-trainer-desc">play a game, get our advice and come closer to the great noses of fragrance world!</p>
+          <button class="nose-trainer-btn" onclick="document.getElementById('download').scrollIntoView({behavior:'smooth'})">
+            start training
+          </button>
+        </div>
+        <div class="nose-trainer-image">
+          <img
+            src="assets/cat.png"
+            alt="Nose trainer illustration"
+            onerror="this.style.display='none'">
+        </div>
+      </div>
+    </div><!-- /nose trainer -->
 
   </main><!-- /page -->
 
@@ -1728,6 +2017,45 @@
           d.setAttribute('aria-selected', i === idx ? 'true' : 'false');
         });
       }, { passive: true });
+    })();
+
+
+    /* ─────────────────────────────────────────────────────────────
+       BLUE BUBBLES — smooth scroll parallax
+    ───────────────────────────────────────────────────────────── */
+    (function() {
+      var tl = document.querySelector('.bubble--tl');
+      var br = document.querySelector('.bubble--br');
+      var root = document.documentElement;
+      if (!tl || !br) return;
+      if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+      var target = 0;
+      var current = 0;
+      var ticking = false;
+
+      function render() {
+        current += (target - current) * 0.09;
+        root.style.setProperty('--bubble-tl-y', (current * 1.0).toFixed(2) + 'px');
+        root.style.setProperty('--bubble-br-y', (-current * 0.7).toFixed(2) + 'px');
+
+        if (Math.abs(target - current) > 0.1) {
+          requestAnimationFrame(render);
+        } else {
+          ticking = false;
+        }
+      }
+
+      function onScroll() {
+        target = Math.min(window.scrollY * 0.12, 56);
+        if (!ticking) {
+          ticking = true;
+          requestAnimationFrame(render);
+        }
+      }
+
+      window.addEventListener('scroll', onScroll, { passive: true });
+      onScroll();
     })();
 
 
