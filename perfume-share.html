@@ -496,7 +496,7 @@
     .scent-sliders {
       display: flex;
       flex-direction: column;
-      gap: 8px;
+      gap: 10px;
       margin-bottom: 16px;
     }
 
@@ -506,9 +506,32 @@
       gap: 8px;
     }
     .scent-row--locked {
+      pointer-events: none;
+      user-select: none;
+    }
+
+    .scent-lock-zone {
+      position: relative;
+      margin-top: 2px;
+      padding: 8px 0 10px;
+      isolation: isolate;
+    }
+    .scent-lock-stack {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
       filter: blur(3px);
       pointer-events: none;
       user-select: none;
+      opacity: .9;
+    }
+    .scent-lock-zone::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(180deg, rgba(255,255,255,0) 0%, rgba(255,255,255,.35) 100%);
+      pointer-events: none;
+      z-index: 1;
     }
 
     .scent-label {
@@ -543,8 +566,15 @@
 
     /* lock pill */
     .lock-pill-center {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%);
+      z-index: 2;
+      width: 100%;
       display: flex;
       justify-content: center;
+      pointer-events: none;
     }
     .lock-pill {
       display: inline-flex;
@@ -562,6 +592,9 @@
       white-space: nowrap;
       cursor: pointer;
       transition: box-shadow .15s, transform .12s;
+      pointer-events: auto;
+      max-width: min(92%, 360px);
+      width: fit-content;
     }
     .lock-pill:active { transform: scale(.97); }
     .key-icon {
@@ -569,6 +602,18 @@
       height: 16px;
       flex-shrink: 0;
       display: block;
+    }
+    .scent-card.is-visible .lock-pill {
+      animation: lockPillFloat 3.2s ease-in-out infinite;
+    }
+    .notes-card.is-visible .lock-pill {
+      animation: lockPillFloat 3.2s ease-in-out infinite;
+    }
+    .scent-card.is-visible .scent-lock-stack {
+      animation: lockedBlockBreath 3.8s ease-in-out infinite;
+    }
+    .notes-card.is-visible .note-lock-stack {
+      animation: lockedBlockBreath 3.8s ease-in-out infinite;
     }
 
     /* ───────────────────────────────────────────────────────────────
@@ -650,9 +695,30 @@
       border-top: 1px solid var(--border);
     }
     .note-row--locked {
+      pointer-events: none;
+      user-select: none;
+    }
+    .note-lock-zone {
+      position: relative;
+      padding: 6px 0 8px;
+      border-top: 1px solid var(--border);
+      isolation: isolate;
+    }
+    .note-lock-stack {
+      display: flex;
+      flex-direction: column;
       filter: blur(3px);
       pointer-events: none;
       user-select: none;
+      opacity: .9;
+    }
+    .note-lock-zone::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(180deg, rgba(255,255,255,0) 0%, rgba(255,255,255,.35) 100%);
+      pointer-events: none;
+      z-index: 1;
     }
 
     .note-user {
@@ -822,6 +888,7 @@
       flex-direction: column;
       align-items: center;
       gap: 10px;
+      padding: 10px 0 12px;
     }
 
     .store-btn {
@@ -835,7 +902,14 @@
     }
     .store-btn:active { opacity: .88; transform: scale(.98); }
 
-    /* App Store & Google Play — SVG badges */
+    .store-badge {
+      width: 100%;
+      height: 100%;
+      display: block;
+      object-fit: contain;
+    }
+
+    /* App Store & Google Play badges */
     .store-btn--ios,
     .store-btn--android {
       border-radius: 10px;
@@ -1117,6 +1191,14 @@
       from { opacity: 0; }
       to   { opacity: 1; }
     }
+    @keyframes lockPillFloat {
+      0%, 100% { box-shadow: var(--shadow-pill); }
+      50% { box-shadow: 0 4px 16px rgba(0,0,0,.12); }
+    }
+    @keyframes lockedBlockBreath {
+      0%, 100% { opacity: .86; }
+      50% { opacity: .96; }
+    }
 
     /* Animated elements start invisible */
     [data-animate] { opacity: 0; }
@@ -1127,12 +1209,22 @@
     /* Hero image entrance */
     .hero-scroll-clip { animation: fadeIn .55s ease .08s forwards; opacity: 0; }
 
+    @media (prefers-reduced-motion: reduce) {
+      .scent-card.is-visible .lock-pill,
+      .scent-card.is-visible .scent-lock-stack,
+      .notes-card.is-visible .lock-pill,
+      .notes-card.is-visible .note-lock-stack {
+        animation: none;
+      }
+    }
+
 
     /* ───────────────────────────────────────────────────────────────
        RESPONSIVE — tablet (≥ 600px)
     ─────────────────────────────────────────────────────────────── */
     @media (min-width: 600px) {
       :root { --px: 24px; }
+      .lock-pill { max-width: min(88%, 420px); }
       .cta-card {
         padding: 18px 16px 18px;
       }
@@ -1153,6 +1245,12 @@
     @media (min-width: 900px) {
       body { padding-bottom: 0; }
       :root { --px: 0px; }
+      .scent-lock-zone { padding: 10px 0 14px; }
+      .note-lock-zone { padding: 8px 0 10px; }
+      .lock-pill {
+        font-size: 14px;
+        padding: 10px 18px;
+      }
 
       /* hide fixed bar on desktop */
       .fixed-bar { display: none; }
@@ -1474,47 +1572,51 @@
           <span class="scent-label scent-label--r">aromatic</span>
         </div>
 
-        <!-- LOCKED: inoffensive ←→ bold -->
-        <div class="scent-row scent-row--locked" aria-hidden="true" data-dynamic="scent-inoffensive-bold">
-          <span class="scent-label scent-label--l">inoffensive</span>
-          <div class="scent-track">
-            <div class="scent-dot" style="left:46.82%"></div>
-          </div>
-          <span class="scent-label scent-label--r">bold</span>
-        </div>
+        <div class="scent-lock-zone" aria-hidden="true">
+          <div class="scent-lock-stack">
+            <!-- LOCKED: inoffensive ←→ bold -->
+            <div class="scent-row scent-row--locked" data-dynamic="scent-inoffensive-bold">
+              <span class="scent-label scent-label--l">inoffensive</span>
+              <div class="scent-track">
+                <div class="scent-dot" style="left:46.82%"></div>
+              </div>
+              <span class="scent-label scent-label--r">bold</span>
+            </div>
 
-        <!-- LOCKED: light ←→ rich -->
-        <div class="scent-row scent-row--locked" aria-hidden="true" data-dynamic="scent-light-rich">
-          <span class="scent-label scent-label--l">light</span>
-          <div class="scent-track">
-            <div class="scent-dot" style="left:19.21%"></div>
-          </div>
-          <span class="scent-label scent-label--r">rich</span>
-        </div>
+            <!-- LOCKED: light ←→ rich -->
+            <div class="scent-row scent-row--locked" data-dynamic="scent-light-rich">
+              <span class="scent-label scent-label--l">light</span>
+              <div class="scent-track">
+                <div class="scent-dot" style="left:19.21%"></div>
+              </div>
+              <span class="scent-label scent-label--r">rich</span>
+            </div>
 
-        <!-- LOCKED: energetic ←→ warm -->
-        <div class="scent-row scent-row--locked" aria-hidden="true" data-dynamic="scent-energetic-warm">
-          <span class="scent-label scent-label--l">energetic</span>
-          <div class="scent-track">
-            <div class="scent-dot" style="left:19.21%"></div>
+            <!-- LOCKED: energetic ←→ warm -->
+            <div class="scent-row scent-row--locked" data-dynamic="scent-energetic-warm">
+              <span class="scent-label scent-label--l">energetic</span>
+              <div class="scent-track">
+                <div class="scent-dot" style="left:19.21%"></div>
+              </div>
+              <span class="scent-label scent-label--r">warm</span>
+            </div>
           </div>
-          <span class="scent-label scent-label--r">warm</span>
+
+          <!-- Lock pill -->
+          <div class="lock-pill-center">
+            <button class="lock-pill" onclick="document.getElementById('download').scrollIntoView({behavior:'smooth'})">
+              <!-- key icon -->
+              <img
+                class="key-icon"
+                src="assets/key.svg"
+                alt=""
+                onerror="this.style.display='none'">
+              See full info in app
+            </button>
+          </div>
         </div>
 
       </div><!-- /scent-sliders -->
-
-      <!-- Lock pill -->
-      <div class="lock-pill-center">
-        <button class="lock-pill" onclick="document.getElementById('download').scrollIntoView({behavior:'smooth'})">
-          <!-- key icon -->
-          <img
-            class="key-icon"
-            src="assets/key.svg"
-            alt=""
-            onerror="this.style.display='none'">
-          See full info in app
-        </button>
-      </div>
 
     </div><!-- /scent card -->
 
@@ -1614,29 +1716,44 @@
         <span class="note-pct" data-dynamic="note-2-pct">100%</span>
       </div>
 
-      <!-- Note 3: Cinnamon — LOCKED -->
-      <div class="note-row note-row--locked" aria-hidden="true" data-dynamic="note-3">
-        <div class="note-user">
-          <div class="note-icon-wrap">
-            <img src="https://www.figma.com/api/mcp/asset/182a6d6e-d42d-4b91-afb3-89b9f80b35b9" alt="">
-          </div>
-          <span class="note-name">Cinnamon</span>
-        </div>
-        <span class="note-pct">100%</span>
-      </div>
-
-      <!-- Note 4: Cedar — LOCKED, with tag -->
-      <div class="note-row note-row--locked" aria-hidden="true" data-dynamic="note-4">
-        <div class="note-user note-user--tagged">
-          <div style="display:flex;align-items:center;gap:8px;">
-            <div class="note-icon-wrap">
-              <img src="https://www.figma.com/api/mcp/asset/182a6d6e-d42d-4b91-afb3-89b9f80b35b9" alt="">
+      <div class="note-lock-zone" aria-hidden="true">
+        <div class="note-lock-stack">
+          <!-- Note 3: Cinnamon — LOCKED -->
+          <div class="note-row note-row--locked" data-dynamic="note-3">
+            <div class="note-user">
+              <div class="note-icon-wrap">
+                <img src="https://www.figma.com/api/mcp/asset/182a6d6e-d42d-4b91-afb3-89b9f80b35b9" alt="">
+              </div>
+              <span class="note-name">Cinnamon</span>
             </div>
-            <span class="note-name">Cedar</span>
+            <span class="note-pct">100%</span>
           </div>
-          <span class="note-tags">plasticky</span>
+
+          <!-- Note 4: Cedar — LOCKED, with tag -->
+          <div class="note-row note-row--locked" data-dynamic="note-4">
+            <div class="note-user note-user--tagged">
+              <div style="display:flex;align-items:center;gap:8px;">
+                <div class="note-icon-wrap">
+                  <img src="https://www.figma.com/api/mcp/asset/182a6d6e-d42d-4b91-afb3-89b9f80b35b9" alt="">
+                </div>
+                <span class="note-name">Cedar</span>
+              </div>
+              <span class="note-tags">plasticky</span>
+            </div>
+            <span class="note-pct">100%</span>
+          </div>
         </div>
-        <span class="note-pct">100%</span>
+
+        <div class="lock-pill-center">
+          <button class="lock-pill" onclick="document.getElementById('download').scrollIntoView({behavior:'smooth'})">
+            <img
+              class="key-icon"
+              src="assets/key.svg"
+              alt=""
+              onerror="this.style.display='none'">
+            See full info in app
+          </button>
+        </div>
       </div>
 
     </div><!-- /notes card -->
@@ -1646,10 +1763,6 @@
     <div class="card seasons-card" data-animate>
       <div class="section-header">
         <h2 class="card-title">seasons</h2>
-        <svg class="info-icon" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-          <circle cx="6" cy="6" r="5.5" stroke="#393840"/>
-          <path d="M6 5.5v3M6 4h.005" stroke="#393840" stroke-width="1.2" stroke-linecap="round"/>
-        </svg>
       </div>
       <div class="seasons-row">
 
