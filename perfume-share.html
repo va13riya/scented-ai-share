@@ -207,7 +207,7 @@
 
     .bottle-frame {
       flex-shrink: 0;
-      width: 320px;
+      width: min(300px, calc(100vw - 70px));
       height: 337.92px;
       border-radius: 20px;
       overflow: hidden;
@@ -556,12 +556,13 @@
     .scent-dot {
       position: absolute;
       top: 50%;
-      width:  10px;
-      height: 10px;
+      width:  16px;
+      height: 16px;
       border-radius: 30px;
       background: var(--primary);
       border: 2px solid white;
       transform: translate(-50%, -50%);
+      box-shadow: 0 1px 4px rgba(0,0,0,.18);
     }
 
     /* lock pill */
@@ -888,7 +889,7 @@
       flex-direction: column;
       align-items: center;
       gap: 10px;
-      padding: 10px 0 12px;
+      padding: 28px 0 12px;
     }
 
     .store-btn {
@@ -1050,13 +1051,13 @@
       position: absolute;
       top: 50%;
       left: 25.4%;
-      width: 10px;
-      height: 10px;
+      width: 16px;
+      height: 16px;
       border-radius: 30px;
       background: var(--primary);
       border: 2px solid white;
       transform: translate(-50%, -50%);
-      box-shadow: 0 1px 4px rgba(0,0,0,.15);
+      box-shadow: 0 1px 4px rgba(0,0,0,.18);
     }
     .gender-labels {
       display: flex;
@@ -1625,10 +1626,6 @@
     <div class="card gender-card" data-animate>
       <div class="section-header">
         <h2 class="card-title">gender</h2>
-        <svg class="info-icon" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-          <circle cx="6" cy="6" r="5.5" stroke="#393840"/>
-          <path d="M6 5.5v3M6 4h.005" stroke="#393840" stroke-width="1.2" stroke-linecap="round"/>
-        </svg>
       </div>
       <div class="gender-track">
         <div class="gender-dot" data-dynamic="gender-dot"></div>
@@ -2107,8 +2104,16 @@
       var dots = document.querySelectorAll('.page-dots .dot');
       if (!clip || !dots.length) return;
 
+      var frames = clip.querySelectorAll('.bottle-frame');
       clip.addEventListener('scroll', function() {
-        var idx = Math.round(clip.scrollLeft / clip.offsetWidth);
+        var clipRect = clip.getBoundingClientRect();
+        var clipCenter = clipRect.left + clipRect.width / 2;
+        var idx = 0, minDist = Infinity;
+        frames.forEach(function(f, i) {
+          var r = f.getBoundingClientRect();
+          var dist = Math.abs((r.left + r.width / 2) - clipCenter);
+          if (dist < minDist) { minDist = dist; idx = i; }
+        });
         dots.forEach(function(d, i) {
           d.classList.toggle('dot--active', i === idx);
           d.classList.toggle('dot--empty',  i !== idx);
